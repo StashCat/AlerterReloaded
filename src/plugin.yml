@@ -1,0 +1,24 @@
+name: Alerter Reloaded
+main: me.stashcat.AlerterReloaded.Main
+version: TEST
+description: The best block protection plugin - recreated!
+author: StashCat
+commands:
+   al:
+      description: Alerter Reloaded main command.
+      usage: /al help
+      aliases: [alerter]
+      permission: alerter
+      permission-message: You do not have permission to execute this command.
+      default: false
+permissions:
+   alerter:
+     description: Allows you to use the /al command.
+     default: false
+
+   alerter.*:
+     description: Allows you to use all Alerter commands and features.
+     default: op
+     children:
+      alerter.admin: true
+      alerter.player: true
