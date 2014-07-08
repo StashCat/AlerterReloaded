@@ -1,3 +1,8 @@
+WARNING: Source not yet updated to the initial release (v1.0b) version.
+======
+Code still references the plugin as AlerterReloaded, which it no longer is. Code is also very outdated, probably what I began coding from. Update to the repo is coming when I'm back from vacation.
+
+
 PlugProtect
 ===============
 
