@@ -82,6 +82,7 @@ public class Main extends JavaPlugin {
 				if (s.hasPermission("plugprotect.modify")) sendMsg(s, false, "&a/pp &2modify [area_name]&r  - Modifies the points of an area");
 				if (s.hasPermission("plugprotect.warp")) sendMsg(s, false, "&a/pp &2warp [area_name]&r  - Warps to an area");
 				if (s.hasPermission("plugprotect.setwarp")) sendMsg(s, false, "&a/pp &2setwarp&r  - Sets a warp for an area");
+				if (s.hasPermission("plugprotect.whitelist")) sendMsg(s, false, "&a/pp &2[add/remove] [area_name] [player_name]&r  - Adds/removes a player to/from your area's whitelist");
 				sendMsg(s, false, "-= &cEnd&r =-");
 				return true;
 				//if (s.hasPermission("plugprotect.PERM")) sendMsg(s, false, "&a/pp &2ARG&r  - DESC");
@@ -303,12 +304,16 @@ public class Main extends JavaPlugin {
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("setwarp") && s.hasPermission("plugprotect.setwarp")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
 				Player p = (Player)s;
+				if (Areas.getArea(p.getLocation()) == null){
+					sendMsg(s, false, "&cYou must be standing inside an area to set it's warp!");
+					return true;
+				}
 				if (!Areas.isOwner(Areas.getArea(p.getLocation()), s.getName()) || !s.hasPermission("plugprotect.setwarp.other")){
 					sendMsg(s, false, "&cThis area &a" + args[1] + "&c does not belong to you.");
 					return true;
 				}
 				getCConfig().set(args[1] + ".warp", p.getLocation().getX() + "," + p.getLocation().getZ());
-				sendMsg(s, false, "&aCustom warp set!");
+				sendMsg(s, false, "&aCustom warp set for area &2" + Areas.getArea(p.getLocation()) + "&a!");
 				return true;
 			}
 			sendMsg(s, false, "&cInvalid arguments! Use &r/pp help&c to see help.");
