@@ -1,5 +1,6 @@
 package me.stashcat.PlugProtect;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 
@@ -133,5 +134,20 @@ public class Areas {
 	
 	public String getOwner(String area){
 		return pl.getCConfig().getString(area + ".owner");
+	}
+	
+	public Location getPosLocs(String area, int pos){
+		double[] posd = {-1, -1};
+		String[] str = pl.getCConfig().getString(area + ".pos" + pos).split(",");
+		posd[0] = Double.parseDouble(str[0]);
+		posd[1] = Double.parseDouble(str[1]);
+		Location loc = new Location(Bukkit.getWorld(pl.getCConfig().getString(area + ".world")), posd[0], 0, posd[1]);
+		loc.setY(loc.getWorld().getHighestBlockYAt(loc));
+		return loc;
+	}
+	
+	public Location[] getPosLocs(String area){
+		Location[] locs = {getPosLocs(area, 1), getPosLocs(area, 2)};
+		return locs;
 	}
 }
