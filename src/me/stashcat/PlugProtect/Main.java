@@ -66,7 +66,7 @@ public class Main extends JavaPlugin {
 			if (args.length == 0){
 				sendMsg(s, false, "&2" + getDescription().getFullName() + "&r by " + getDescription().getAuthors());
 				sendMsg(s, false, "Use &a/pp help&r to see all commands.");
-				sendMsg(s, false, "In memory of the original PlugProtect plugin by &apatrick_pk91&r");
+				sendMsg(s, false, "In memory of the original Alerter plugin by &apatrick_pk91&r");
 				return true;
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("help") && s.hasPermission("plugprotect")){
 				sendMsg(s, false, "-= &3&lPlugProtect&3 Help&r =-");
