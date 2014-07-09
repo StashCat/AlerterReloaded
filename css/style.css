@@ -65,7 +65,7 @@ nav small {
 	vertical-align: center;
 	color: rgb(22,22,22);
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-	padding: 10px;
+	padding-top: 10px;
 }
 
 .footer a {
