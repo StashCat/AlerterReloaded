@@ -1,0 +1,5 @@
+auto-update: true
+
+warn:
+  water: true
+  lava: true

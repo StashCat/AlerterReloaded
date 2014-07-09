@@ -1,24 +1,86 @@
-name: Alerter Reloaded
-main: me.stashcat.AlerterReloaded.Main
-version: TEST
-description: The best block protection plugin - recreated!
+name: PlugProtect
+main: me.stashcat.PlugProtect.Main
+version: 1.0b
+description: A successor to the popular old and now-abandoned Alerter protection plugin.
 author: StashCat
 commands:
    al:
-      description: Alerter Reloaded main command.
-      usage: /al help
-      aliases: [alerter]
-      permission: alerter
+      description: PlugProtect main command.
+      usage: /pp help
+      aliases: [plugprotect]
+      permission: plugprotect
       permission-message: You do not have permission to execute this command.
       default: false
+
 permissions:
-   alerter:
-     description: Allows you to use the /al command.
+   plugprotect:
+     description: Allows you to use the /pp command.
+     default: true
+
+   plugprotect.set:
+     description: Allows you to create your area.
      default: false
 
-   alerter.*:
-     description: Allows you to use all Alerter commands and features.
+   plugprotect.rename:
+     description: Allows you to rename your area.
+     default: false
+
+   plugprotect.rename.other:
+     description: Allows you to rename other players' areas.
+     default: false
+
+   plugprotect.delete:
+     description: Allows you to delete your area.
+     default: false
+
+   plugprotect.delete.other:
+     description: Allows you to delete other players' areas.
+     default: false
+
+   plugprotect.modify:
+     description: Allows you to modify your area.
+     default: false
+
+   plugprotect.modify.other:
+     description: Allows you to modify other players' areas.
+     default: false
+
+   plugprotect.warp:
+     description: Allows you to warp to areas.
+     default: false
+
+   plugprotect.bypass:
+     description: Allows you to bypass all protection of an area.
+     default: false
+
+   plugprotect.alert:
+     description: Allows you to be alerted.
+     default: false
+
+   plugprotect.*:
+     description: Allows you to use all PlugProtect commands and features.
      default: op
      children:
-      alerter.admin: true
-      alerter.player: true
+      plugprotect.admin: true
+
+   plugprotect.player:
+     description: Allows you to do all player commands; create an area, rename it, delete it and modify it.
+     default: true
+     children:
+      plugprotect: true
+      plugprotect.set: true
+      plugprotect.rename: true
+      plugprotect.delete: true
+      plugprotect.modify: true
+      plugprotect.warp: true
+
+   plugprotect.admin:
+     description: Allows you to do all admin-related commands; administer own and others areas, delete/rename them, etc. Includes all player permissions.
+     default: false
+     children:
+      plugprotect.player: true
+      plugprotect.rename.other: true
+      plugprotect.delete.other: true
+      plugprotect.modify.other: true
+      plugprotect.bypass: true
+      plugprotect.alert: true
