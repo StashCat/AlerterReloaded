@@ -1,59 +1,41 @@
 <!DOCTYPE html>
 <html>
-
-  <head>
-    <meta charset='utf-8' />
-    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="PlugProtect : A successor to the popular old and now-abandoned Alerter protection plugin" />
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>PlugProtect</title>
-  </head>
-
-  <body>
-
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/StashCat/PlugProtect">View on GitHub</a>
-
-          <h1 id="project_title">PlugProtect</h1>
-          <h2 id="project_tagline">A successor to the popular old and now-abandoned Alerter protection plugin</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/StashCat/PlugProtect/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/StashCat/PlugProtect/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <h1>
-<a name="plugprotect" class="anchor" href="#plugprotect"><span class="octicon octicon-link"></span></a>PlugProtect</h1>
-
-<h6>
-<a name="a-successor-to-the-popular-old-and-now-abandoned-alerter-protection-plugin" class="anchor" href="#a-successor-to-the-popular-old-and-now-abandoned-alerter-protection-plugin"><span class="octicon octicon-link"></span></a>A successor to the popular old and now-abandoned Alerter protection plugin</h6>
-
-<p>PlugProtect is aimed to be a successor to the old and popular protection plugin Alerter, which got abandoned by the developer a few years ago. It's pretty straight-forward, easy to use and useful.</p>
-
-<p>DBO Page (<strong>full docs</strong>) - <a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/">http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/</a></p>
-
-<p>Spigot Page (<strong>instant updates</strong>) - <a href="http://www.spigotmc.org/resources/plugprotect.727/">http://www.spigotmc.org/resources/plugprotect.727/</a></p>
-      </section>
-    </div>
-
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">PlugProtect maintained by <a href="https://github.com/StashCat">StashCat</a></p>
-        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
-
-    
-
-  </body>
+    <head>
+        <link href="css/fonts.css" rel="stylesheet"/>
+		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>PlugProtect</title>
+        <link href="css/style.css" rel="stylesheet"/>
+    </head>
+    <body>
+        <div class="container">
+            <nav id="nav">
+				<a href="/"><p>PlugProtect</p></a>
+				<ul>
+					<li><a href="https://github.com/StashCat/PlugProtect/wiki">Wiki</a></li
+					><!--<li><a href="#" onclick="return false;">Menu Item 2</a></li>-->
+				</ul>
+			</nav>
+            <div class="content" id="content">
+				<div class="rightButtons">
+					<a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/files/" class="btn" tooltip="Compiled (.JAR) releases"><i class="fa fa-download"></i> Download</a>
+					<a href="https://github.com/StashCat/PlugProtect/zipball/master" class="btn" tooltip="Current source (.ZIP)"><i class="fa fa-file-zip-o"></i> Source</a>
+					<a href="https://github.com/StashCat/PlugProtect/" class="btn" tooltip="View this project on GitHub"><i class="fa fa-github"></i> GitHub</a>
+				</div>
+				<h5>A successor to the popular old and now-abandoned Alerter protection plugin.</h5><br>
+				PlugProtect is aimed to be a successor to the old and popular protection plugin Alerter, which got abandoned by the developer a few years ago. It's pretty straight-forward, easy to use and useful.<br><br>
+				<a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/" class="btn" tooltip="Approved updates, full docs and fast support">DBO Page</a>
+				<a href="http://www.spigotmc.org/resources/plugprotect.727/" class="btn" tooltip="Instant updates, ugly-ish docs and slow support">Spigot Page</a>
+            </div>
+        </div>
+        <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+        <script>
+        function changeNavClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
+        $('#nav ul li a').click(function() {changeNavClass(this);});
+        function changeSideClass(item) {$('#side ul li a').removeClass('active');$(item).addClass('active');}
+        $('#side ul li a').click(function() {changeSideClass(this);});
+    </script>
+    </body>
 </html>
