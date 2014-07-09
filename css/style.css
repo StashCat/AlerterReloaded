@@ -54,8 +54,9 @@ nav small {
 .rightButtons {
 	display: inline-block;
 	float: right;
-	position: relative;
-	top: -89px;
+	position: absolute;
+	right: 10px;
+	top: 10px;
 }
 
 nav p {
