@@ -153,7 +153,7 @@ public class Main extends JavaPlugin {
 				}
 				return true;
 			} else if (args.length == 3 && args[0].equalsIgnoreCase("rename") && s.hasPermission("plugprotect.rename")){
-				if (getCConfig().getString(args[1]) == null){
+				if (Areas.exists(args[1])){
 					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
 					return true;
 				}
@@ -173,7 +173,7 @@ public class Main extends JavaPlugin {
 				sendMsg(s, false, "&cYou must enter both the current and new area names!");
 				return true;
 			} else if (args.length == 2 && args[0].equalsIgnoreCase("delete") && s.hasPermission("plugprotect.delete")){
-				if (getCConfig().getString(args[1]) == null){
+				if (Areas.exists(args[1])){
 					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
 					return true;
 				}
@@ -253,7 +253,7 @@ public class Main extends JavaPlugin {
 					modifying.remove(s.getName());
 					return true;
 				}
-				if (getCConfig().getString(args[1]) == null){
+				if (Areas.exists(args[1])){
 					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
 					return true;
 				}
@@ -281,7 +281,7 @@ public class Main extends JavaPlugin {
 			} else if (args.length == 2 && args[0].equalsIgnoreCase("warp") && s.hasPermission("plugprotect.warp")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
 				Player p = ((Player)s);
-				if (getCConfig().getString(args[1]) == null){
+				if (Areas.exists(args[1])){
 					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
 					return true;
 				}
@@ -298,6 +298,16 @@ public class Main extends JavaPlugin {
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("warp") && s.hasPermission("plugprotect.warp")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
 				sendMsg(s, false, "&cYou must specify what area to warp to!");
+				return true;
+			} else if (args.length == 1 && args[0].equalsIgnoreCase("setwarp") && s.hasPermission("plugprotect.setwarp")){
+				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
+				Player p = (Player)s;
+				if (!Areas.isOwner(Areas.getArea(p.getLocation()), s.getName()) || !s.hasPermission("plugprotect.setwarp.other")){
+					sendMsg(s, false, "&cThis area &a" + args[1] + "&c does not belong to you.");
+					return true;
+				}
+				getCConfig().set(args[1] + ".warp", p.getLocation().getX() + "," + p.getLocation().getZ());
+				sendMsg(s, false, "&aCustom warp set!");
 				return true;
 			}
 			sendMsg(s, false, "&cInvalid arguments! Use &r/pp help&c to see help.");

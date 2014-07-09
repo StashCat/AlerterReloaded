@@ -57,6 +57,14 @@ permissions:
      description: Allows you to be alerted.
      default: false
 
+   plugprotect.setwarp:
+     description: Allows you to set a custom warp for your area.
+     default: false
+
+   plugprotect.setwarp.other:
+     description: Allows you to set a custom warp for other players' areas.
+     default: false
+
    plugprotect.*:
      description: Allows you to use all PlugProtect commands and features.
      default: op
@@ -73,6 +81,7 @@ permissions:
       plugprotect.delete: true
       plugprotect.modify: true
       plugprotect.warp: true
+      plugprotect.setwarp: true
 
    plugprotect.admin:
      description: Allows you to do all admin-related commands; administer own and others areas, delete/rename them, etc. Includes all player permissions.
@@ -84,3 +93,4 @@ permissions:
       plugprotect.modify.other: true
       plugprotect.bypass: true
       plugprotect.alert: true
+      plugprotect.setwarp.other: true
