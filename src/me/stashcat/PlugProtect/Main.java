@@ -3,6 +3,7 @@ package me.stashcat.PlugProtect;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,7 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
+import me.stashcat.PlugProtect.Enchantments.UnmovableEnchant;
 import me.stashcat.PlugProtect.Updater.Updater;
 
 import org.bukkit.ChatColor;
@@ -20,6 +23,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -40,6 +45,7 @@ public class Main extends JavaPlugin {
 	private File dataFile = null;
 	private ItemStack wand;
 	public Areas Areas;
+	UnmovableEnchant UnmovableEnchant;
 	
 	public void onEnable(){
 		saveDefaultConfig();
@@ -49,6 +55,15 @@ public class Main extends JavaPlugin {
 		if (getConfig().getBoolean("auto-update")){
 			@SuppressWarnings("unused")
 			Updater updater = new Updater(this, 123456, this.getFile(), Updater.UpdateType.DEFAULT, false);
+		}
+		UnmovableEnchant = new UnmovableEnchant(501);
+		try {
+		    Field f = Enchantment.class.getDeclaredField("acceptingNew");
+		    f.setAccessible(true);
+		    f.set(null, true);
+		    EnchantmentWrapper.registerEnchantment(UnmovableEnchant);
+		} catch (Exception e) {
+		    getLogger().log(Level.INFO, "Error setting up custom enchant; no worries, it's used only for display");
 		}
 		initWand();
 		Areas = new Areas(this);
@@ -400,6 +415,7 @@ public class Main extends JavaPlugin {
 		ItemMeta meta = wand.getItemMeta();
 		meta.setDisplayName(colorize("&3&lMagic Wand"));
 		meta.setLore(Arrays.asList(colorize("&r&aLeft-click to set position 1."), colorize("&r&aRight-click to set position 2.")));
+		meta.addEnchant(UnmovableEnchant, 1, true);
 		wand.setItemMeta(meta);
     }
     
