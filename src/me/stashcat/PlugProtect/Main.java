@@ -79,7 +79,7 @@ public class Main extends JavaPlugin {
 				if (s.hasPermission("plugprotect.delete")) sendMsg(s, false, "&a/pp &2delete [area_name]&r  - Deletes an area");
 				if (s.hasPermission("plugprotect.list") && !s.hasPermission("plugprotect.list.other")) sendMsg(s, false, "&a/pp &2list&r  - Lists all areas you own");
 				else if (s.hasPermission("plugprotect.list")) sendMsg(s, false, "&a/pp &2list (all)&r  - Lists areas you own or all existing areas.");
-				//if (s.hasPermission("plugprotect.modify")) sendMsg(s, false, "&a/pp &2modify [area_name]&r  - Modifies the points of an area");
+				if (s.hasPermission("plugprotect.modify")) sendMsg(s, false, "&a/pp &2modify [area_name]&r  - Modifies the points of an area");
 				if (s.hasPermission("plugprotect.warp")) sendMsg(s, false, "&a/pp &2warp [area_name]&r  - Warps to an area");
 				sendMsg(s, false, "-= &cEnd&r =-");
 				return true;
@@ -233,6 +233,26 @@ public class Main extends JavaPlugin {
 				return true;
 			} else if (args.length == 2 && args[0].equalsIgnoreCase("modify") && s.hasPermission("plugprotect.modify")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
+				if (args[1].equalsIgnoreCase("confirm") && modifying.containsKey(s.getName())){
+					if (pos1.get(s.getName()).getWorld() != pos2.get(s.getName()).getWorld()){
+						sendMsg(s, false, "&cWorlds of both points must match!");
+						return true;
+					}
+					ItemStack i = ((Player)s).getItemInHand();
+					if (!i.isSimilar(wand)){
+						sendMsg(s, false, "&cYou must be holding the wand to save!");
+						return true;
+					}
+					((Player)s).getInventory().clear(((Player)s).getInventory().getHeldItemSlot());
+					getCConfig().set(args[1] + ".pos1", pos1.get(s.getName()).getX() + "," + pos1.get(s.getName()).getZ());
+					getCConfig().set(args[1] + ".pos2", pos2.get(s.getName()).getX() + "," + pos2.get(s.getName()).getZ());
+					saveCConfig();
+					pos1.remove(s.getName());
+					pos2.remove(s.getName());
+					sendMsg(s, false, "&aSaved modification of &2" + modifying.get(s.getName()) + "&a.");
+					modifying.remove(s.getName());
+					return true;
+				}
 				if (getCConfig().getString(args[1]) == null){
 					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
 					return true;
@@ -241,7 +261,18 @@ public class Main extends JavaPlugin {
 					sendMsg(s, false, "&cThe area &a" + args[1] + "&c does not belong to you.");
 					return true;
 				}
-				sendMsg(s, false, "Work-in-progress; should be finished in the next release!");//TODO Modify
+				Player p = (Player)s;
+				if (p.getInventory().getItemInHand().getType() == Material.AIR){
+					p.getInventory().setItemInHand(wand);
+					modifying.put(p.getName(), args[1]);
+					pos1.put(p.getName(), Areas.getPosLocs(args[1], 1));
+					pos2.put(p.getName(), Areas.getPosLocs(args[1], 2));
+					sendMsg(p, false, "Please select the both ends of your new area.");
+					sendMsg(p, false, "Left-click sets position 1, while right-click sets position 2.");
+					sendMsg(p, false, "Once you're finished, type &7/pp modify confirm&r to save your modification.");
+				} else {
+					sendMsg(p, false, "&cPlease remove any items you are currently holding and try again.");
+				}
 				return true;
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("modify") && s.hasPermission("plugprotect.modify")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}

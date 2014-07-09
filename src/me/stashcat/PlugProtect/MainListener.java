@@ -41,23 +41,33 @@ public class MainListener implements Listener {
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
-		if (!e.isCancelled() && e.getClickedBlock() != null && pl.setting.contains(e.getPlayer().getName())){
+		if (!e.isCancelled() && e.getClickedBlock() != null){
 			ItemStack i = e.getItem();
 			if (i.isSimilar(pl.getWand())){
 				Player p = e.getPlayer();
 				Block b = e.getClickedBlock();
 				Action a = e.getAction();
-				if (a == Action.LEFT_CLICK_BLOCK){
-					pl.pos1.put(p.getName(), b.getLocation());
-					pl.sendMsg(p, false, "Position 1 set.");
-				} else if (a == Action.RIGHT_CLICK_BLOCK){
-					pl.pos2.put(p.getName(), b.getLocation());
-					pl.sendMsg(p, false, "Position 2 set.");
+				if (pl.setting.contains(e.getPlayer().getName())){
+					if (a == Action.LEFT_CLICK_BLOCK){
+						pl.pos1.put(p.getName(), b.getLocation());
+						pl.sendMsg(p, false, "Position 1 set.");
+					} else if (a == Action.RIGHT_CLICK_BLOCK){
+						pl.pos2.put(p.getName(), b.getLocation());
+						pl.sendMsg(p, false, "Position 2 set.");
+					}
+					if (pl.pos1.containsKey(p.getName()) && pl.pos2.containsKey(p.getName())){
+						pl.sendMsg(p, false, "You have selected both ends. Now execute &7/pp create [name]&r to save your area.");
+					}
+					e.setCancelled(true);
+				} else if (pl.modifying.containsKey(e.getPlayer().getName())){
+					if (a == Action.LEFT_CLICK_BLOCK){
+						pl.pos1.put(p.getName(), b.getLocation());
+						pl.sendMsg(p, false, "Position 1 re-set.");
+					} else if (a == Action.RIGHT_CLICK_BLOCK){
+						pl.pos2.put(p.getName(), b.getLocation());
+						pl.sendMsg(p, false, "Position 2 re-set.");
+					}
 				}
-				if (pl.pos1.containsKey(p.getName()) && pl.pos2.containsKey(p.getName())){
-					pl.sendMsg(p, false, "You have selected both ends. Now execute &7/pp create [name]&r to save your area.");
-				}
-				e.setCancelled(true);
 			}
 		}
 	}
