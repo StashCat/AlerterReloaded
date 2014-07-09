@@ -69,7 +69,7 @@ public class Areas {
 	
 	public double[] getWarp(String area){
 		double[] warp = {-1, -1};
-		if (pl.getCConfig().getString("warp") != null){
+		if (pl.getCConfig().getString(area + ".warp") != null){
 			String[] warpget = pl.getCConfig().getString(area + ".warp").split(",");
 			try {
 				warp[0] = Integer.parseInt(warpget[0]);
