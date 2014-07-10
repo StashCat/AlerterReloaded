@@ -37,7 +37,8 @@ public class Main extends JavaPlugin {
 	private String prefix;
 	public MainListener MainListener;
 	Set<String> settingArea = new HashSet<String>();
-	Map<String, String> settingMsg = new HashMap<String, String>();
+	Map<String, String> settingWelcome = new HashMap<String, String>();
+	Map<String, String> settingFarewell = new HashMap<String, String>();
 	Map<String, String> modifying = new HashMap<String, String>();
 	Map<String, Location> pos1 = new HashMap<String, Location>();
 	Map<String, Location> pos2 = new HashMap<String, Location>();
@@ -98,6 +99,7 @@ public class Main extends JavaPlugin {
 				if (s.hasPermission("plugprotect.warp")) sendMsg(s, false, "&a/pp &2warp [area_name]&r  - Warps to an area");
 				if (s.hasPermission("plugprotect.setwarp")) sendMsg(s, false, "&a/pp &2setwarp&r  - Sets a warp for an area");
 				if (s.hasPermission("plugprotect.whitelist")) sendMsg(s, false, "&a/pp &2[add/remove] [player_name] [area_name]&r  - Adds/removes a player to/from your area's whitelist");
+				if (s.hasPermission("plugprotect.setmsg")) sendMsg(s, false, "&a/pp &2[setwelcome/setfarewell] [area_name]&r  - Sets a welcome/farewell message for an area");
 				sendMsg(s, false, "-= &cEnd&r =-");
 				return true;
 				//if (s.hasPermission("plugprotect.PERM")) sendMsg(s, false, "&a/pp &2ARG&r  - DESC");
@@ -360,12 +362,31 @@ public class Main extends JavaPlugin {
 					action = "remove from";
 				sendMsg(s, false, "&cYou must enter both the area name and the player to " + action + " the whitelist!");
 				return true;
-			/*} else if (args.length == 2 && args[0].equalsIgnoreCase("setwelcome") && s.hasPermission("plugprotect.setwelcome")){
-				
-			} else if (args.length == 1 && args[0].equalsIgnoreCase("setwelcome") && s.hasPermission("plugprotect.setwelcome")){
-				sendMsg(s, true, "&cYou must specify an area to set the welcome message of!");
+			} else if (args.length == 2 && (args[0].equalsIgnoreCase("setwelcome") || args[0].equalsIgnoreCase("setfarewell")) && s.hasPermission("plugprotect.setmsg")){
+				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
+				if (Areas.exists(args[1])){
+					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
+					return true;
+				}
+				if (!Areas.isOwner(args[1], s.getName()) && !s.hasPermission("plugprotect.setmsg.other")){
+					sendMsg(s, false, "&cThe area &a" + args[1] + "&c does not belong to you.");
+					return true;
+				}
+				boolean welcome = args[0].equalsIgnoreCase("setwelcome");
+				String setting = null;
+				if (welcome) setting = "welcome"; else setting = "farewell";
+				if (welcome)
+					settingWelcome.put(s.getName(), setting);
+				else
+					settingFarewell.put(s.getName(), setting);
+				sendMsg(s, false, "Please enter your " + setting + " message in chat.");
 				return true;
-			*/
+			} else if (args.length == 1 && (args[0].equalsIgnoreCase("setwelcome") || args[0].equalsIgnoreCase("setfarewell")) && s.hasPermission("plugprotect.setmsg")){
+				boolean welcome = args[0].equalsIgnoreCase("setwelcome");
+				String setting = null;
+				if (welcome) setting = "welcome"; else setting = "farewell";
+				sendMsg(s, false, "&cYou must specify an area to set the " + setting + " message of!");
+				return true;
 			}
 			sendMsg(s, false, "&cInvalid arguments! Use &r/pp help&c to see help.");
 			return true;
