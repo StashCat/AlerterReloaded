@@ -100,6 +100,7 @@ public class Main extends JavaPlugin {
 				if (s.hasPermission("plugprotect.setwarp")) sendMsg(s, false, "&a/pp &2setwarp&r  - Sets a warp for an area");
 				if (s.hasPermission("plugprotect.whitelist")) sendMsg(s, false, "&a/pp &2[add/remove] [player_name] [area_name]&r  - Adds/removes a player to/from your area's whitelist");
 				if (s.hasPermission("plugprotect.setmsg")) sendMsg(s, false, "&a/pp &2[setwelcome/setfarewell] [area_name]&r  - Sets a welcome/farewell message for an area");
+				//if (s.hasPermission("plugprotect.togglepvp")) sendMsg(s, false, "&a/pp &2togglepvp [area_name}&r  - Toggles PvP in your area");
 				sendMsg(s, false, "-= &cEnd&r =-");
 				return true;
 				//if (s.hasPermission("plugprotect.PERM")) sendMsg(s, false, "&a/pp &2ARG&r  - DESC");
