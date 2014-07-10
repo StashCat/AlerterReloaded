@@ -29,7 +29,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -37,7 +36,8 @@ public class Main extends JavaPlugin {
 	
 	private String prefix;
 	public MainListener MainListener;
-	Set<String> setting = new HashSet<String>();
+	Set<String> settingArea = new HashSet<String>();
+	Map<String, String> settingMsg = new HashMap<String, String>();
 	Map<String, String> modifying = new HashMap<String, String>();
 	Map<String, Location> pos1 = new HashMap<String, Location>();
 	Map<String, Location> pos2 = new HashMap<String, Location>();
@@ -97,7 +97,7 @@ public class Main extends JavaPlugin {
 				if (s.hasPermission("plugprotect.modify")) sendMsg(s, false, "&a/pp &2modify [area_name]&r  - Modifies the points of an area");
 				if (s.hasPermission("plugprotect.warp")) sendMsg(s, false, "&a/pp &2warp [area_name]&r  - Warps to an area");
 				if (s.hasPermission("plugprotect.setwarp")) sendMsg(s, false, "&a/pp &2setwarp&r  - Sets a warp for an area");
-				if (s.hasPermission("plugprotect.whitelist")) sendMsg(s, false, "&a/pp &2[add/remove] [area_name] [player_name]&r  - Adds/removes a player to/from your area's whitelist");
+				if (s.hasPermission("plugprotect.whitelist")) sendMsg(s, false, "&a/pp &2[add/remove] [player_name] [area_name]&r  - Adds/removes a player to/from your area's whitelist");
 				sendMsg(s, false, "-= &cEnd&r =-");
 				return true;
 				//if (s.hasPermission("plugprotect.PERM")) sendMsg(s, false, "&a/pp &2ARG&r  - DESC");
@@ -111,7 +111,7 @@ public class Main extends JavaPlugin {
 				Player p = (Player)s;
 				if (p.getInventory().getItemInHand().getType() == Material.AIR){
 					p.getInventory().setItemInHand(wand);
-					setting.add(p.getName());
+					settingArea.add(p.getName());
 					sendMsg(p, false, "Please select both ends of the area you want to protect with the golden axe.");
 					sendMsg(p, false, "Left-click sets position 1, while right-click sets position 2.");
 				} else {
@@ -120,7 +120,7 @@ public class Main extends JavaPlugin {
 				return true;
 			} else if (args.length == 2 && args[0].equalsIgnoreCase("create") && s.hasPermission("plugprotect.set")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
-				if (setting.contains(s.getName()) && pos1.containsKey(s.getName()) && pos2.containsKey(s.getName()) && getCConfig().get(args[1]) == null){
+				if (settingArea.contains(s.getName()) && pos1.containsKey(s.getName()) && pos2.containsKey(s.getName()) && getCConfig().get(args[1]) == null){
 					if (pos1.get(s.getName()).getWorld() != pos2.get(s.getName()).getWorld()){
 						sendMsg(s, false, "&cWorlds of both points must match!");
 						return true;
@@ -136,13 +136,13 @@ public class Main extends JavaPlugin {
 					getCConfig().set(args[1] + ".pos1", pos1.get(s.getName()).getX() + "," + pos1.get(s.getName()).getZ());
 					getCConfig().set(args[1] + ".pos2", pos2.get(s.getName()).getX() + "," + pos2.get(s.getName()).getZ());
 					saveCConfig();
-					setting.remove(s.getName());
+					settingArea.remove(s.getName());
 					pos1.remove(s.getName());
 					pos2.remove(s.getName());
 					sendMsg(s, false, "&aSelected area created as &2" + args[1] + "&a.");
 					return true;
 				} else {
-					if (!setting.contains(s.getName()))
+					if (!settingArea.contains(s.getName()))
 						sendMsg(s, false, "&cYou are not setting an area.");
 					else if (!pos1.containsKey(s.getName()) && pos2.containsKey(s.getName()))
 						sendMsg(s, false, "&cYou did not set all points.");
@@ -154,13 +154,13 @@ public class Main extends JavaPlugin {
 				return true;
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("cancel") && s.hasPermission("plugprotect.set")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
-				if (setting.contains(s.getName())){
+				if (settingArea.contains(s.getName())){
 					ItemStack i = ((Player)s).getItemInHand();
 					if (!i.isSimilar(wand)){
 						sendMsg(s, false, "&cYou must be holding the wand to cancel!");
 						return true;
 					}
-					setting.remove(s.getName());
+					settingArea.remove(s.getName());
 					pos1.remove(s.getName());
 					pos2.remove(s.getName());
 					((Player)s).getInventory().clear(((Player)s).getInventory().getHeldItemSlot());
@@ -330,6 +330,42 @@ public class Main extends JavaPlugin {
 				getCConfig().set(args[1] + ".warp", p.getLocation().getX() + "," + p.getLocation().getZ());
 				sendMsg(s, false, "&aCustom warp set for area &2" + Areas.getArea(p.getLocation()) + "&a!");
 				return true;
+			} else if (args.length == 3 && args[0].equalsIgnoreCase("add") && s.hasPermission("plugprotect.whitelist")
+					|| args.length == 3 && args[0].equalsIgnoreCase("remove") && s.hasPermission("plugprotect.whitelist")){
+				boolean add = args[0].equalsIgnoreCase("add");
+				if (Areas.exists(args[2])){
+					sendMsg(s, false, "&cArea &a" + args[2] + "&c does not exist.");
+					return true;
+				}
+				if (!Areas.isOwner(args[2], s.getName()) && !s.hasPermission("plugprotect.whitelist.other")){
+					sendMsg(s, false, "&cThe area &a" + args[2] + "&c does not belong to you.");
+					return true;
+				}
+				editList(getCConfig(), add, args[2] + ".whitelist", args[1]);
+				saveCConfig();
+				String action = null;
+				if (add)
+					action = "added to";
+				else
+					action = "removed from";
+				sendMsg(s, false, "&aPlayer &2" + args[1] + "&a has been " + action + " the whitelist!");
+				return true;
+			} else if (args.length > 0 && args.length < 3 && args[0].equalsIgnoreCase("add") && s.hasPermission("plugprotect.whitelist")
+					|| args.length > 0 && args.length < 3 && args[0].equalsIgnoreCase("remove") && s.hasPermission("plugprotect.whitelist")){
+				boolean add = args[0].equalsIgnoreCase("add");
+				String action = null;
+				if (add)
+					action = "add to";
+				else
+					action = "remove from";
+				sendMsg(s, false, "&cYou must enter both the area name and the player to " + action + " the whitelist!");
+				return true;
+			/*} else if (args.length == 2 && args[0].equalsIgnoreCase("setwelcome") && s.hasPermission("plugprotect.setwelcome")){
+				
+			} else if (args.length == 1 && args[0].equalsIgnoreCase("setwelcome") && s.hasPermission("plugprotect.setwelcome")){
+				sendMsg(s, true, "&cYou must specify an area to set the welcome message of!");
+				return true;
+			*/
 			}
 			sendMsg(s, false, "&cInvalid arguments! Use &r/pp help&c to see help.");
 			return true;
@@ -403,11 +439,13 @@ public class Main extends JavaPlugin {
     	return ChatColor.translateAlternateColorCodes(character, msg);
     }
     
-    public void addListElement(Plugin p, String key, String... element) {
-        List<String> list = p.getConfig().getStringList(key);
-        list.addAll(Arrays.asList(element));
-        p.getConfig().set(key, list);
-        p.saveConfig();
+    public void editList(FileConfiguration conf, boolean add, String key, String... element) {
+        List<String> list = conf.getStringList(key);
+        if(add)
+        	list.addAll(Arrays.asList(element));
+        else
+        	list.remove(element);
+        conf.set(key, list);
     }
     
     void initWand(){

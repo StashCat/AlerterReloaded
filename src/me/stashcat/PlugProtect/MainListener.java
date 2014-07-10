@@ -23,6 +23,7 @@ import org.bukkit.event.entity.EntityTameEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -47,7 +48,7 @@ public class MainListener implements Listener {
 				Player p = e.getPlayer();
 				Block b = e.getClickedBlock();
 				Action a = e.getAction();
-				if (pl.setting.contains(e.getPlayer().getName())){
+				if (pl.settingArea.contains(e.getPlayer().getName())){
 					if (a == Action.LEFT_CLICK_BLOCK){
 						pl.pos1.put(p.getName(), b.getLocation());
 						pl.sendMsg(p, false, "Position 1 set.");
@@ -73,6 +74,16 @@ public class MainListener implements Listener {
 	}
 	
 	@EventHandler
+	public void onChat(AsyncPlayerChatEvent e){
+		if (e.isCancelled())
+			return;
+		Player p = e.getPlayer();
+		if (pl.settingMsg.containsKey(p.getName())){
+			
+		}
+	}
+	
+	@EventHandler
 	public void onBucketEmpty(PlayerBucketEmptyEvent e){
 		String what = "BUCKET";
 		if (e.getBucket() == Material.LAVA_BUCKET)
@@ -90,7 +101,7 @@ public class MainListener implements Listener {
 	
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
-		if (!e.isCancelled() && pl.setting.contains(e.getPlayer().getName())){
+		if (!e.isCancelled() && pl.settingArea.contains(e.getPlayer().getName())){
 			ItemStack i = e.getItemDrop().getItemStack();
 			if (i.isSimilar(pl.getWand())){
 				pl.sendMsg(e.getPlayer(), false, "&cYou are not allowed to drop the wand.");
@@ -102,7 +113,7 @@ public class MainListener implements Listener {
 	@EventHandler
 	public void onInvMove(InventoryClickEvent e){
 		Player p = (Player)e.getWhoClicked();
-		if (pl.setting.contains(p.getName())){
+		if (pl.settingArea.contains(p.getName())){
 			ItemStack i = e.getCurrentItem();
 			if (i.isSimilar(pl.getWand())){
 				pl.sendMsg(p, false, "&cYou are not allowed to move the wand.");
@@ -114,7 +125,7 @@ public class MainListener implements Listener {
 	@EventHandler
 	public void onInvDrag(InventoryDragEvent e){
 		Player p = (Player)e.getWhoClicked();
-		if (pl.setting.contains(p.getName())){
+		if (pl.settingArea.contains(p.getName())){
 			Collection<ItemStack> icoll = e.getNewItems().values();
 			for (ItemStack i : icoll){
 				if (i.isSimilar(pl.getWand())){
@@ -151,7 +162,7 @@ public class MainListener implements Listener {
 			return;
 		Player p = e.getPlayer();
 		if (pl.Areas.isProtected(e.getBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.isOwner(pl.Areas.getArea(e.getBlock().getLocation()), p.getName())){
+			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getBlock().getLocation()), p.getName())){
 				pl.sendMsg(p, false, "&cThis block is protected.");
 				e.setCancelled(true);
 			}
@@ -164,7 +175,7 @@ public class MainListener implements Listener {
 			return;
 		Player p = e.getPlayer();
 		if (pl.Areas.isProtected(e.getBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.isOwner(pl.Areas.getArea(e.getBlock().getLocation()), p.getName())){
+			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getBlock().getLocation()), p.getName())){
 				pl.sendMsg(p, false, "&cThis area is protected.");
 				e.setCancelled(true);
 			}
@@ -179,7 +190,7 @@ public class MainListener implements Listener {
 			return;
 		Player p = e.getPlayer();
 		if (pl.Areas.isProtected(e.getClickedBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.isOwner(pl.Areas.getArea(e.getClickedBlock().getLocation()), p.getName())){
+			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getClickedBlock().getLocation()), p.getName())){
 				pl.sendMsg(p, false, "&cThis block is protected.");
 				e.setCancelled(true);
 			}
@@ -192,7 +203,7 @@ public class MainListener implements Listener {
 			return;
 		Player p = e.getPlayer();
 		if (pl.Areas.isProtected(e.getRightClicked().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.isOwner(pl.Areas.getArea(e.getRightClicked().getLocation()), p.getName())){
+			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getRightClicked().getLocation()), p.getName())){
 				pl.sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}
@@ -207,7 +218,7 @@ public class MainListener implements Listener {
 			return;
 		Player p = (Player)e.getDamager();
 		if (pl.Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.isOwner(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
+			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
 				pl.sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}
@@ -222,7 +233,7 @@ public class MainListener implements Listener {
 			return;
 		Player p = (Player) e.getOwner();
 		if (pl.Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.isOwner(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
+			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
 				pl.sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}
@@ -235,7 +246,7 @@ public class MainListener implements Listener {
 			return;
 		Player p = e.getPlayer();
 		if (pl.Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.isOwner(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
+			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
 				pl.sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}

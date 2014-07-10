@@ -150,4 +150,10 @@ public class Areas {
 		Location[] locs = {getPosLocs(area, 1), getPosLocs(area, 2)};
 		return locs;
 	}
+	
+	public boolean canBuild(String area, String pname){
+		if (pl.getCConfig().getString(area + ".owner") == pname || pl.getCConfig().getList(area + ".whitelist").contains(pname))
+			return true;
+		return false;
+	}
 }
