@@ -1,3 +1,7 @@
+WARNING: Source not yet updated to the latest (v1.1b) version (yet again).
+=====
+GitHub is breaking, can't push to the repo. Trying to fix it.
+
 PlugProtect
 ===============
 
