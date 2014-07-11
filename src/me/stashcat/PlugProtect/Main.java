@@ -78,7 +78,7 @@ public class Main extends JavaPlugin {
 	}
 	
 	public boolean onCommand(CommandSender s, Command cmd, String label, String[] args){
-		if (cmd.getName().equalsIgnoreCase("al") || cmd.getName().equalsIgnoreCase("plugprotect")){
+		if (cmd.getName().equalsIgnoreCase("pp") || cmd.getName().equalsIgnoreCase("plugprotect")){
 			if (args.length == 0){
 				sendMsg(s, false, "&2" + getDescription().getFullName() + "&r by " + getDescription().getAuthors());
 				sendMsg(s, false, "Use &a/pp help&r to see all commands.");
