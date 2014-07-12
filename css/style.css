@@ -72,19 +72,18 @@ nav small {
 a {
 	position: relative;
 	top: 0;
-	color: rgb(50,50,50);
+	color: rgb(75,75,75);
 	text-decoration: none;
 }
 
 a:hover {
-	color: rgb(75,75,75);
+	color: rgb(125,125,125);
 	text-decoration: underline;
 }
 
 a:active {
-	color: rgb(25,25,25);
+	color: rgb(50,50,50);
 	top: 1px;
-	box-shadow: 0px -2px 5px -1px rgba(0,0,0,0.1);
 }
 
 nav p {
@@ -128,7 +127,6 @@ nav a {
 	position: initial;
     text-decoration: none;
     color: #6E6E6E;
-    box-shadow: 0px 0px 0px #fff;
 } 
 
 nav a:hover {
@@ -142,7 +140,6 @@ nav a:active {
 	top: 0;
 	color: #6e6e6e;
 	text-decoration: none;
-	box-shadow: 0px 0px 0px #fff;
 }
 
 nav li a:before, nav li a:after {
