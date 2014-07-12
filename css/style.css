@@ -71,10 +71,12 @@ nav small {
 
 .footer a {
 	color: rgb(30,30,30);
+	text-decoration: none;
 }
 
 .footer a:hover {
 	color: rgb(35,35,35);
+	text-decoration: underline;
 }
 
 .footer a:active {
