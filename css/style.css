@@ -125,12 +125,23 @@ nav li.active a {
 }
 
 nav a {
+	position: initial;
     text-decoration: none;
     color: #6E6E6E;
+    box-shadow: 0px 0px 0px #fff;
 } 
 
 nav a:hover {
+	top: 0;
     color: #2E2E2E;
+    text-decoration: none;
+    color: #6e6e6e;
+}
+
+nav a:active {
+	top: 0;
+	color: #6e6e6e;
+	text-decoration: none;
 }
 
 nav li a:before, nav li a:after {
@@ -225,6 +236,7 @@ h1, h2, h3, h4, h5, h6  {
 }
 
 .btn:active {
+	color: #fafafa;
 	top: 0;
 	box-shadow: inset -1000px 0px 0px rgba(255,255,255,0);
     border: solid 2px rgba(0,0,0,0);
