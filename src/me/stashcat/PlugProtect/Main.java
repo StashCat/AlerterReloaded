@@ -3,7 +3,6 @@ package me.stashcat.PlugProtect;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,18 +12,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
-import me.stashcat.PlugProtect.Enchantments.UnmovableEnchant;
-import me.stashcat.PlugProtect.Updater.Updater;
+import me.stashcat.PlugProtect.Listeners.Signs;
+import me.stashcat.PlugProtect.Metrics.Metrics;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +35,8 @@ public class Main extends JavaPlugin {
 	
 	private String prefix;
 	public MainListener MainListener;
-	Set<String> settingArea = new HashSet<String>();
+	Map<String, ItemStack[]> settingArea = new HashMap<String, ItemStack[]>();
+	Map <String, ItemStack[]> armour = new HashMap <String, ItemStack[]>();
 	Map<String, String> settingWelcome = new HashMap<String, String>();
 	Map<String, String> settingFarewell = new HashMap<String, String>();
 	Map<String, String> modifying = new HashMap<String, String>();
@@ -46,7 +46,8 @@ public class Main extends JavaPlugin {
 	private File dataFile = null;
 	private ItemStack wand;
 	public Areas Areas;
-	UnmovableEnchant UnmovableEnchant;
+	public Signs Signs;
+	Metrics Metrics;
 	
 	public void onEnable(){
 		saveDefaultConfig();
@@ -54,27 +55,28 @@ public class Main extends JavaPlugin {
 		saveDefaultCConfig();
 		saveCConfig();
 		if (getConfig().getBoolean("auto-update")){
-			@SuppressWarnings("unused")
-			Updater updater = new Updater(this, 123456, this.getFile(), Updater.UpdateType.DEFAULT, false);
-		}
-		UnmovableEnchant = new UnmovableEnchant(501);
-		try {
-		    Field f = Enchantment.class.getDeclaredField("acceptingNew");
-		    f.setAccessible(true);
-		    f.set(null, true);
-		    EnchantmentWrapper.registerEnchantment(UnmovableEnchant);
-		} catch (Exception e) {
-		    getLogger().log(Level.INFO, "Error setting up custom enchant; no worries, it's used only for display");
+			//@SuppressWarnings("unused")
+			//Updater updater = new Updater(this, 82179, this.getFile(), Updater.UpdateType.DEFAULT, false);
 		}
 		initWand();
+		if (getConfig().getBoolean("send-stats"))
+			try {
+				Metrics = new Metrics(this);
+				getLogger().log(Level.INFO, "Metrics successfully started!");
+			} catch (IOException e) {
+				getLogger().log(Level.WARNING, "Could not start Metrics!");
+				getLogger().log(Level.WARNING, "\"" + e.getMessage() + "\"");
+			}
 		Areas = new Areas(this);
 		MainListener = new MainListener(this);
+		Signs = new Signs(this);
 		prefix = "[" + ChatColor.GREEN + ChatColor.BOLD + getDescription().getName() + ChatColor.RESET + "] ";
-		System.out.println(getDescription().getFullName() + " Enabled!");
+		getLogger().log(Level.INFO, getDescription().getFullName() + " Enabled!");
 	}
 	
 	public void onDisable(){
 		System.out.println(getDescription().getFullName() + " Disabled!");
+		restoreAllInventories();
 	}
 	
 	public boolean onCommand(CommandSender s, Command cmd, String label, String[] args){
@@ -112,40 +114,42 @@ public class Main extends JavaPlugin {
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("set") && s.hasPermission("plugprotect.set")){
 				if (!(s instanceof Player)){sendMsg(s, false, "You must be a player to execute this command."); return true;}
 				Player p = (Player)s;
-				if (p.getInventory().getItemInHand().getType() == Material.AIR){
-					p.getInventory().setItemInHand(wand);
-					settingArea.add(p.getName());
-					sendMsg(p, false, "Please select both ends of the area you want to protect with the golden axe.");
-					sendMsg(p, false, "Left-click sets position 1, while right-click sets position 2.");
-				} else {
-					sendMsg(p, false, "&cPlease remove any items you are currently holding and try again.");
+				if (settingArea.containsKey(p.getName()) || modifying.containsKey(p.getName())){
+					sendMsg(p, false, "&cYou are already setting an area!");
+					return true;
 				}
+				settingArea.put(p.getName(), p.getInventory().getContents().clone());
+				armour.put(p.getName(), p.getInventory().getArmorContents().clone());
+				p.getInventory().clear();
+				p.getInventory().setArmorContents(null);
+				p.getInventory().setItem(0, wand);
+				sendMsg(p, false, "Please select both ends of the area you want to protect with the golden axe.");
+				sendMsg(p, false, "Left-click sets position 1, while right-click sets position 2.");
 				return true;
 			} else if (args.length == 2 && args[0].equalsIgnoreCase("create") && s.hasPermission("plugprotect.set")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
-				if (settingArea.contains(s.getName()) && pos1.containsKey(s.getName()) && pos2.containsKey(s.getName()) && getCConfig().get(args[1]) == null){
+				if (settingArea.containsKey(s.getName()) && pos1.containsKey(s.getName()) && pos2.containsKey(s.getName()) && getCConfig().get(args[1]) == null){
 					if (pos1.get(s.getName()).getWorld() != pos2.get(s.getName()).getWorld()){
 						sendMsg(s, false, "&cWorlds of both points must match!");
 						return true;
 					}
-					ItemStack i = ((Player)s).getItemInHand();
-					if (!i.isSimilar(wand)){
-						sendMsg(s, false, "&cYou must be holding the wand to save!");
-						return true;
-					}
-					((Player)s).getInventory().clear(((Player)s).getInventory().getHeldItemSlot());
+					Player p = (Player)s;
+					p.getInventory().clear();
+					p.getInventory().setContents(settingArea.get(p.getName()));
+					p.getInventory().setArmorContents(armour.get(p.getName()));
 					getCConfig().set(args[1] + ".owner", s.getName());
 					getCConfig().set(args[1] + ".world", pos1.get(s.getName()).getWorld().getName());
 					getCConfig().set(args[1] + ".pos1", pos1.get(s.getName()).getX() + "," + pos1.get(s.getName()).getZ());
 					getCConfig().set(args[1] + ".pos2", pos2.get(s.getName()).getX() + "," + pos2.get(s.getName()).getZ());
 					saveCConfig();
 					settingArea.remove(s.getName());
+					armour.remove(s.getName());
 					pos1.remove(s.getName());
 					pos2.remove(s.getName());
 					sendMsg(s, false, "&aSelected area created as &2" + args[1] + "&a.");
 					return true;
 				} else {
-					if (!settingArea.contains(s.getName()))
+					if (!settingArea.containsKey(s.getName()))
 						sendMsg(s, false, "&cYou are not setting an area.");
 					else if (!pos1.containsKey(s.getName()) && pos2.containsKey(s.getName()))
 						sendMsg(s, false, "&cYou did not set all points.");
@@ -157,16 +161,15 @@ public class Main extends JavaPlugin {
 				return true;
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("cancel") && s.hasPermission("plugprotect.set")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
-				if (settingArea.contains(s.getName())){
-					ItemStack i = ((Player)s).getItemInHand();
-					if (!i.isSimilar(wand)){
-						sendMsg(s, false, "&cYou must be holding the wand to cancel!");
-						return true;
-					}
-					settingArea.remove(s.getName());
+				Player p = (Player)s;
+				if (settingArea.containsKey(s.getName())){
 					pos1.remove(s.getName());
 					pos2.remove(s.getName());
-					((Player)s).getInventory().clear(((Player)s).getInventory().getHeldItemSlot());
+					p.getInventory().clear();
+					p.getInventory().setContents(settingArea.get(p.getName()));
+					p.getInventory().setArmorContents(armour.get(p.getName()));
+					settingArea.remove(s.getName());
+					armour.remove(p.getName());
 					sendMsg(s, false, "&aArea setting cancelled.");
 				} else {
 					sendMsg(s, false, "&cYou are not setting an area.");
@@ -187,6 +190,7 @@ public class Main extends JavaPlugin {
 				}
 				getCConfig().set(args[2], getCConfig().getConfigurationSection(args[1]));
 				getCConfig().set(args[1], null);
+				saveCConfig();
 				sendMsg(s, false, "&aArea successfully &6renamed&a to &2" + args[2] + "&a.");
 				return true;
 			} else if (args.length <= 2 && args.length > 0 && args[0].equalsIgnoreCase("rename") && s.hasPermission("plugprotect.rename")){
@@ -202,6 +206,7 @@ public class Main extends JavaPlugin {
 					return true;
 				}
 				getCConfig().set(args[1], null);
+				saveCConfig();
 				sendMsg(s, false, "&aArea &2" + args[1] + "&a successfully &cdeleted&a.");
 				return true;
 			} else if (args.length == 1 && args[0].equalsIgnoreCase("delete") && s.hasPermission("plugprotect.delete")){
@@ -227,7 +232,7 @@ public class Main extends JavaPlugin {
 					if (i < page && keys.hasNext()){
 						keys.next();
 						continue;
-					} else if (i < page && !keys.hasNext()){
+					} else if ((i < page || i == 0) && !keys.hasNext()){
 						sendMsg(s, false, "&cPage does not exist.");
 						break;
 					} else if (!keys.hasNext()){
@@ -239,13 +244,12 @@ public class Main extends JavaPlugin {
 						continue;
 					if (Areas.isOwner(key, s.getName()) || s.hasPermission("plugprotect.list.other")){
 						sendMsg(s, false, "&a" + key + "&r: (owned by &a" + getCConfig().getString(key + ".owner") + "&r)");
-						String[] pos1 = getCConfig().getString(key + ".pos1").split(",");
-						String[] pos2 = getCConfig().getString(key + ".pos2").split(",");
-						sendMsg(s, false, " Position: &ax1 &2" + pos1[0] + "&r, &az1 &2" + pos1[1] + "&r; &ax2 &2" + pos2[0] + "&r, &az2 &2" + pos2[1] + "&r");
+						double[] pos = Areas.getWarp(key);
+						sendMsg(s, false, " Position: &ax &2" + pos[0] + "&r, &az &2" + pos[1]);
 						sendMsg(s, false, " Size: &a" + Areas.getSize(key));
 						i++;
 					}
-					if (i == page + results && keys.hasNext()){
+					if (i <= page + results - 1 && keys.hasNext()){
 						sendMsg(s, false, "Type in &a/pp list " + (page / 5) + "&r to view more.");
 						break;
 					}
@@ -253,6 +257,7 @@ public class Main extends JavaPlugin {
 				return true;
 			} else if (args.length == 2 && args[0].equalsIgnoreCase("modify") && s.hasPermission("plugprotect.modify")){
 				if (!(s instanceof Player)){sendMsg(s, false, "&cYou must be a player to execute this command."); return true;}
+				Player p = (Player)s;
 				if (args[1].equalsIgnoreCase("confirm") && modifying.containsKey(s.getName())){
 					if (pos1.get(s.getName()).getWorld() != pos2.get(s.getName()).getWorld()){
 						sendMsg(s, false, "&cWorlds of both points must match!");
@@ -264,8 +269,8 @@ public class Main extends JavaPlugin {
 						return true;
 					}
 					((Player)s).getInventory().clear(((Player)s).getInventory().getHeldItemSlot());
-					getCConfig().set(args[1] + ".pos1", pos1.get(s.getName()).getX() + "," + pos1.get(s.getName()).getZ());
-					getCConfig().set(args[1] + ".pos2", pos2.get(s.getName()).getX() + "," + pos2.get(s.getName()).getZ());
+					getCConfig().set(modifying.get(s.getName()) + ".pos1", pos1.get(s.getName()).getX() + "," + pos1.get(s.getName()).getZ());
+					getCConfig().set(modifying.get(s.getName()) + ".pos2", pos2.get(s.getName()).getX() + "," + pos2.get(s.getName()).getZ());
 					saveCConfig();
 					pos1.remove(s.getName());
 					pos2.remove(s.getName());
@@ -273,15 +278,18 @@ public class Main extends JavaPlugin {
 					modifying.remove(s.getName());
 					return true;
 				}
+				if (settingArea.containsKey(p.getName()) || modifying.containsKey(p.getName())){
+					sendMsg(p, false, "&cYou are already setting an area!");
+					return true;
+				}
 				if (Areas.exists(args[1])){
 					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
 					return true;
 				}
-				if (!Areas.isOwner(args[1], s.getName()) || !s.hasPermission("plugprotect.modify.other")){
+				if (!Areas.isOwner(args[1], s.getName()) && !s.hasPermission("plugprotect.modify.other")){
 					sendMsg(s, false, "&cThe area &a" + args[1] + "&c does not belong to you.");
 					return true;
 				}
-				Player p = (Player)s;
 				if (p.getInventory().getItemInHand().getType() == Material.AIR){
 					p.getInventory().setItemInHand(wand);
 					modifying.put(p.getName(), args[1]);
@@ -326,11 +334,12 @@ public class Main extends JavaPlugin {
 					sendMsg(s, false, "&cYou must be standing inside an area to set it's warp!");
 					return true;
 				}
-				if (!Areas.isOwner(Areas.getArea(p.getLocation()), s.getName()) || !s.hasPermission("plugprotect.setwarp.other")){
-					sendMsg(s, false, "&cThis area &a" + args[1] + "&c does not belong to you.");
+				if (!Areas.isOwner(Areas.getArea(p.getLocation()), s.getName()) && !s.hasPermission("plugprotect.setwarp.other")){
+					sendMsg(s, false, "&cThis area &a" + Areas.getArea(p.getLocation()) + "&c does not belong to you.");
 					return true;
 				}
-				getCConfig().set(args[1] + ".warp", p.getLocation().getX() + "," + p.getLocation().getZ());
+				getCConfig().set(Areas.getArea(p.getLocation()) + ".warp", p.getLocation().getX() + "," + p.getLocation().getZ());
+				saveCConfig();
 				sendMsg(s, false, "&aCustom warp set for area &2" + Areas.getArea(p.getLocation()) + "&a!");
 				return true;
 			} else if (args.length == 3 && args[0].equalsIgnoreCase("add") && s.hasPermission("plugprotect.whitelist")
@@ -377,9 +386,9 @@ public class Main extends JavaPlugin {
 				String setting = null;
 				if (welcome) setting = "welcome"; else setting = "farewell";
 				if (welcome)
-					settingWelcome.put(s.getName(), setting);
+					settingWelcome.put(s.getName(), args[1]);
 				else
-					settingFarewell.put(s.getName(), setting);
+					settingFarewell.put(s.getName(), args[1]);
 				sendMsg(s, false, "Please enter your " + setting + " message in chat.");
 				return true;
 			} else if (args.length == 1 && (args[0].equalsIgnoreCase("setwelcome") || args[0].equalsIgnoreCase("setfarewell")) && s.hasPermission("plugprotect.setmsg")){
@@ -466,7 +475,7 @@ public class Main extends JavaPlugin {
         if(add)
         	list.addAll(Arrays.asList(element));
         else
-        	list.remove(element);
+        	list.removeAll(Arrays.asList(element));
         conf.set(key, list);
     }
     
@@ -475,11 +484,48 @@ public class Main extends JavaPlugin {
 		ItemMeta meta = wand.getItemMeta();
 		meta.setDisplayName(colorize("&3&lMagic Wand"));
 		meta.setLore(Arrays.asList(colorize("&r&aLeft-click to set position 1."), colorize("&r&aRight-click to set position 2.")));
-		meta.addEnchant(UnmovableEnchant, 1, true);
 		wand.setItemMeta(meta);
     }
     
     public ItemStack getWand(){
     	return wand;
     }
+    
+    public void restoreInventory(Player p){
+    	if (settingArea.containsKey(p.getName())){
+    		p.getInventory().setContents(settingArea.get(p.getName()));
+    		p.getInventory().setArmorContents(armour.get(p.getName()));
+    		settingArea.remove(p.getName());
+    		armour.remove(p.getName());
+    	}
+    }
+    
+    public void restoreAllInventories(){
+    	for (Player p : getServer().getOnlinePlayers())
+    		restoreInventory(p);
+    }
+    
+    public Set<Block> getBlocksAround(Location l){
+		Set<Block> bs = new HashSet<Block>();
+		Block lb = l.getBlock();
+		if (lb.getRelative(BlockFace.NORTH).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.NORTH));
+		if (lb.getRelative(BlockFace.NORTH_EAST).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.NORTH_EAST));
+		if (lb.getRelative(BlockFace.NORTH_WEST).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.NORTH_WEST));
+		if (lb.getRelative(BlockFace.EAST).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.EAST));
+		if (lb.getRelative(BlockFace.SOUTH).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.SOUTH));
+		if (lb.getRelative(BlockFace.SOUTH_EAST).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.SOUTH_EAST));
+		if (lb.getRelative(BlockFace.SOUTH_WEST).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.SOUTH_WEST));
+		if (lb.getRelative(BlockFace.WEST).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.WEST));
+		if (lb.getRelative(BlockFace.SELF).getType() != Material.AIR)
+			bs.add(lb.getRelative(BlockFace.SELF));
+		return bs;
+	}
 }

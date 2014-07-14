@@ -1,17 +1,15 @@
 package me.stashcat.PlugProtect;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import me.stashcat.PlugProtect.Events.PlayerEnterProtectedAreaEvent;
 import me.stashcat.PlugProtect.Events.PlayerLeaveProtectedAreaEvent;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,15 +18,16 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTameEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class MainListener implements Listener {
@@ -42,13 +41,13 @@ public class MainListener implements Listener {
 	
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
-		if (!e.isCancelled() && e.getClickedBlock() != null){
+		if (pl.settingArea.containsKey(e.getPlayer().getName()) && !e.isCancelled() && e.getClickedBlock() != null && e.getItem() != null){
 			ItemStack i = e.getItem();
 			if (i.isSimilar(pl.getWand())){
 				Player p = e.getPlayer();
 				Block b = e.getClickedBlock();
 				Action a = e.getAction();
-				if (pl.settingArea.contains(e.getPlayer().getName())){
+				if (pl.settingArea.containsKey(e.getPlayer().getName())){
 					if (a == Action.LEFT_CLICK_BLOCK){
 						pl.pos1.put(p.getName(), b.getLocation());
 						pl.sendMsg(p, false, "Position 1 set.");
@@ -62,12 +61,15 @@ public class MainListener implements Listener {
 					e.setCancelled(true);
 				} else if (pl.modifying.containsKey(e.getPlayer().getName())){
 					if (a == Action.LEFT_CLICK_BLOCK){
+						pl.pos1.remove(p.getName());
 						pl.pos1.put(p.getName(), b.getLocation());
 						pl.sendMsg(p, false, "Position 1 re-set.");
 					} else if (a == Action.RIGHT_CLICK_BLOCK){
+						pl.pos2.remove(p.getName());
 						pl.pos2.put(p.getName(), b.getLocation());
 						pl.sendMsg(p, false, "Position 2 re-set.");
 					}
+					e.setCancelled(true);
 				}
 			}
 		}
@@ -84,16 +86,17 @@ public class MainListener implements Listener {
 			String setting = null;
 			String area = null;
 			if (welcome){
-				setting = "welcome";
+				setting = "Welcome";
 				area = pl.settingWelcome.get(p.getName());
 				pl.settingWelcome.remove(p.getName());
 			} else {
-				setting = "farewell";
+				setting = "Farewell";
 				area = pl.settingFarewell.get(p.getName());
 				pl.settingFarewell.remove(p.getName());
 			}
-			pl.getCConfig().set(area + "." + setting, msg);
-			pl.sendMsg(p, false, "&aFarewell message successfully set to:");
+			pl.getCConfig().set(area + "." + setting.toLowerCase(), msg);
+			pl.saveCConfig();
+			pl.sendMsg(p, false, "&a" + setting + " message successfully set to:");
 			pl.sendMsg(p, false, "  " + msg);
 			e.setCancelled(true);
 		}
@@ -117,39 +120,23 @@ public class MainListener implements Listener {
 	
 	@EventHandler
 	public void onDrop(PlayerDropItemEvent e){
-		if (!e.isCancelled() && pl.settingArea.contains(e.getPlayer().getName())){
-			ItemStack i = e.getItemDrop().getItemStack();
-			if (i.isSimilar(pl.getWand())){
-				pl.sendMsg(e.getPlayer(), false, "&cYou are not allowed to drop the wand.");
-				e.setCancelled(true);
-			}
+		if (!e.isCancelled() && pl.settingArea.containsKey(e.getPlayer().getName())){
+			pl.sendMsg(e.getPlayer(), false, "&cYou are setting an area.");
+			e.setCancelled(true);
 		}
 	}
 	
 	@EventHandler
-	public void onInvMove(InventoryClickEvent e){
-		Player p = (Player)e.getWhoClicked();
-		if (pl.settingArea.contains(p.getName())){
-			ItemStack i = e.getCurrentItem();
-			if (i.isSimilar(pl.getWand())){
-				pl.sendMsg(p, false, "&cYou are not allowed to move the wand.");
-				e.setCancelled(true);
-			}
+	public void onInventoryMove(InventoryClickEvent e){
+		if (!e.isCancelled() && pl.settingArea.containsKey(e.getWhoClicked().getName())){
+			pl.sendMsg((Player)e.getWhoClicked(), false, "&cYou are setting an area.");
+			e.setCancelled(true);
 		}
 	}
 	
 	@EventHandler
-	public void onInvDrag(InventoryDragEvent e){
-		Player p = (Player)e.getWhoClicked();
-		if (pl.settingArea.contains(p.getName())){
-			Collection<ItemStack> icoll = e.getNewItems().values();
-			for (ItemStack i : icoll){
-				if (i.isSimilar(pl.getWand())){
-					pl.sendMsg(p, false, "&cYou are not allowed to move the wand.");
-					e.setCancelled(true);
-				}
-			}
-		}
+	public void onQuit(PlayerQuitEvent e){
+		pl.restoreInventory(e.getPlayer());
 	}
 	
 	@EventHandler
@@ -161,13 +148,17 @@ public class MainListener implements Listener {
 		String keyFrom = pl.Areas.getArea(locFrom);
 		if (!inArea.containsKey(p.getName()) && pl.Areas.isProtected(loc)){
 			inArea.put(p.getName(), key);
-			pl.sendMsg(p, false, pl.Areas.getEnterMessage(key, pl.getCConfig().getString(key + ".owner")));
-			PlayerEnterProtectedAreaEvent event = new PlayerEnterProtectedAreaEvent(p, key, pl.Areas.getLeaveMessage(key, p.getName()));
+			pl.sendMsg(p, false, pl.Areas.getWelcomeMessage(key, pl.getCConfig().getString(key + ".owner")));
+			PlayerEnterProtectedAreaEvent event = new PlayerEnterProtectedAreaEvent(p, key, pl.Areas.getWelcomeMessage(key, p.getName()));
 			pl.getServer().getPluginManager().callEvent(event);
 		} else if (inArea.containsKey(p.getName()) && inArea.get(p.getName()).equals(keyFrom) && !pl.Areas.isProtected(loc)) {
 			inArea.remove(p.getName());
-			pl.sendMsg(p, false, pl.Areas.getLeaveMessage(keyFrom, pl.getCConfig().getString(keyFrom + ".owner")));
-			PlayerLeaveProtectedAreaEvent event = new PlayerLeaveProtectedAreaEvent(p, keyFrom, pl.Areas.getLeaveMessage(keyFrom, p.getName()));
+			pl.sendMsg(p, false, pl.Areas.getFarewellMessage(keyFrom, pl.getCConfig().getString(keyFrom + ".owner")));
+			PlayerLeaveProtectedAreaEvent event = new PlayerLeaveProtectedAreaEvent(p, keyFrom, pl.Areas.getFarewellMessage(keyFrom, p.getName()));
+			pl.getServer().getPluginManager().callEvent(event);
+		} else if (inArea.containsKey(p.getName()) && !pl.Areas.isProtected(loc)) {
+			inArea.remove(p.getName());
+			PlayerLeaveProtectedAreaEvent event = new PlayerLeaveProtectedAreaEvent(p, null, null);
 			pl.getServer().getPluginManager().callEvent(event);
 		}
 	}
@@ -270,34 +261,13 @@ public class MainListener implements Listener {
 	}
 	
 	@EventHandler
-	public void onSignPlace(BlockPlaceEvent e){
+	public void onEntityTarget(EntityTargetEvent e){
 		if (e.isCancelled())
 			return;
-		Block b = e.getBlock();
-		if (b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN){
-			Sign s = (Sign)b;
-			Player p = e.getPlayer();
-			String[] l = s.getLines();
-			if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[private]")){
-				s.setLine(0, "[" + ChatColor.GREEN + "Private" + ChatColor.RESET + "]");
-				if (ChatColor.stripColor(l[1]).isEmpty()){
-					s.setLine(1, p.getName());
-				}
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onSignDestroy(BlockBreakEvent e){
-		if (e.isCancelled())
-			return;
-		Block b = e.getBlock();
-		if (b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN){
-			Sign s = (Sign)b;
-			String[] l = s.getLines();
-			if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[private]")){
-				
-			}
+		Entity ent = e.getEntity();
+		Entity targ = e.getTarget();
+		if (pl.Areas.getArea(ent.getLocation()) != null || pl.Areas.getArea(targ.getLocation()) != null){
+			e.setCancelled(true);
 		}
 	}
 }

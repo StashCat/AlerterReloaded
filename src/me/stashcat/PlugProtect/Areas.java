@@ -15,15 +15,15 @@ public class Areas {
 		return pl.getCConfig().getString(area) == null;
 	}
 	
-	public String getEnterMessage(String area, String pname){
-		String msg = pl.getCConfig().getString(area + ".enter");
+	public String getWelcomeMessage(String area, String pname){
+		String msg = pl.getCConfig().getString(area + ".welcome");
 		if (msg == null)
 			msg = "Welcome to %area of %owner";
 		return msg.replace("%area", "&a" + area + "&r").replace("%owner", "&a" + pname + "&r");
 	}
 	
-	public String getLeaveMessage(String area, String pname){
-		String msg = pl.getCConfig().getString(area + ".enter");
+	public String getFarewellMessage(String area, String pname){
+		String msg = pl.getCConfig().getString(area + ".farewell");
 		if (msg == null)
 			msg = "You have left %area of %owner";
 		return msg.replace("%area", "&a" + area + "&r").replace("%owner", "&a" + pname + "&r");
@@ -72,15 +72,14 @@ public class Areas {
 		if (pl.getCConfig().getString(area + ".warp") != null){
 			String[] warpget = pl.getCConfig().getString(area + ".warp").split(",");
 			try {
-				warp[0] = Integer.parseInt(warpget[0]);
-				warp[1] = Integer.parseInt(warpget[1]);
+				warp[0] = Double.parseDouble(warpget[0]);
+				warp[1] = Double.parseDouble(warpget[1]);
 			} catch (NumberFormatException e){
 				return warp;
 			}
 		} else {
 			double[] mid = getMiddle(area);
-			warp[0] = mid[0];
-			warp[1] = mid[1];
+			return mid;
 		}
 		return warp;
 	}
@@ -152,7 +151,7 @@ public class Areas {
 	}
 	
 	public boolean canBuild(String area, String pname){
-		if (pl.getCConfig().getString(area + ".owner") == pname || pl.getCConfig().getList(area + ".whitelist").contains(pname))
+		if (pl.getCConfig().getString(area + ".owner").equals(pname) || pl.getCConfig().getList(area + ".whitelist").contains(pname))
 			return true;
 		return false;
 	}

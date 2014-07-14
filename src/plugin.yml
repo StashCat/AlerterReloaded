@@ -1,10 +1,10 @@
 name: PlugProtect
 main: me.stashcat.PlugProtect.Main
-version: 1.1b
+version: 1.2b
 description: A successor to the popular old and now-abandoned Alerter protection plugin.
 author: StashCat
 commands:
-   al:
+   pp:
       description: PlugProtect main command.
       usage: /pp help
       aliases: [plugprotect]
@@ -16,6 +16,10 @@ permissions:
    plugprotect:
      description: Allows you to use the /pp command.
      default: true
+
+   plugprotect.reload:
+     description: Alows you to reload the configs.
+     default: false
 
    plugprotect.set:
      description: Allows you to create your area.
@@ -81,11 +85,16 @@ permissions:
      description: Allows you to set custom welcome/farewell messages for other players' areas.
      default: false
 
+   plugprotect.list:
+     description: Allows you to list all areas.
+     default: false
+
    plugprotect.*:
      description: Allows you to use all PlugProtect commands and features.
      default: op
      children:
       plugprotect.admin: true
+      plugprotect.reload: true
 
    plugprotect.player:
      description: Allows you to do all player commands; create an area, rename it, delete it and modify it.
@@ -100,6 +109,7 @@ permissions:
       plugprotect.setwarp: true
       plugprotect.whitelist: true
       plugprotect.setmsg: true
+      plugprotect.list: true
 
    plugprotect.admin:
      description: Allows you to do all admin-related commands; administer own and others areas, delete/rename them, etc. Includes all player permissions.

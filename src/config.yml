@@ -1,4 +1,5 @@
 auto-update: true
+send-stats: true
 
 warn:
   water: true
