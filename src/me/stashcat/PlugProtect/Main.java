@@ -62,6 +62,7 @@ public class Main extends JavaPlugin {
 		if (getConfig().getBoolean("send-stats"))
 			try {
 				Metrics = new Metrics(this);
+				Metrics.start();
 				getLogger().log(Level.INFO, "Metrics successfully started!");
 			} catch (IOException e) {
 				getLogger().log(Level.WARNING, "Could not start Metrics!");
