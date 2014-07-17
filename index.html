@@ -39,7 +39,7 @@
         $('#nav ul li a').click(function() {changeNavClass(this);});
         function changeSideClass(item) {$('#side ul li a').removeClass('active');$(item).addClass('active');}
         $('#side ul li a').click(function() {changeSideClass(this);});
-        $.get( "http://direct.projects.stashcat.me/~other/test.php", function( data ) {
+        $.get( "http://projects.stashcat.me/~other/test.php", function( data ) {
   	  $("#bukkit_latestver").html(" (" + data + ")");
 	});
     </script>
