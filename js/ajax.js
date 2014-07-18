@@ -2,7 +2,7 @@ $(document).ready(function(){
     $('#loader').css('opacity', '0');
     checkURL();
 
-    $('ul li a').click(function (e){
+    $('#nav ul li a').click(function (e){
             checkURL(this.hash);
     });
 
@@ -10,44 +10,42 @@ $(document).ready(function(){
 
 });
 
-var lasturl="";
-var d = new Date();
-var transition = false;
+var lasturl = "";
+var hashes = [];
+var inUse = [];
 
 function checkURL(hash){
-    if(!hash) hash=window.location.hash;
-
-    if(hash != lasturl){
-        lasturl=hash;
-        
-        if (transition == false){
-            transition = true;
-            $('#loader').css('opacity', '1');
-            $('#content').toggleClass("loading");
-            setTimeout(function(){loadPage(hash);}, 200);
-        }
-        changeClass($('a[href^="' + hash.replace('page', '') + '"]'));
+    if (!hash) hash=window.location.hash;
+    if (hash != lasturl){
+        lasturl = hash;
+        hashes[hashes.length] = hash;
+        $('#loader').css('opacity', '1');
+        $('#content').addClass("loading");
+        changeClass($('a[href^=#' + hash + ']'));
+        loadPage();
     }
 }
 
-function loadPage(url){
-    url=url.replace('#page','');
-    $.ajax({
+function loadPage(){
+    inUse[inUse.length]=hashes[0].replace('#page','');
+    hashes.splice(0, 1);
+    var request = $.ajax({
         type: "GET",
-        url: "/pages/" + url,
+        url: "pages/" + inUse[0] + ".html",
         dataType: "html",
-        success: function(msg){
-            if(parseInt(msg)!=0){
-                $('#content').html(msg);
-                $('#loader').css('opacity', '0');
-                if (transition == true){
-                    $('#content').toggleClass("loading");
-                    transition = false;
-                }
-            }
-        },
-        error: function(msg){
-            $('#content').html("Failed to load page: " + msg);
-        }
     });
+    setTimeout(function(){
+        request.done(function(msg){
+            $('#content').html(msg);
+            $('#loader').css('opacity', '0');
+            $('#content').removeClass("loading");
+            inUse.splice(0, 1);
+        });
+        request.fail(function(jqXHR, msg){
+            $('#content').html("<h1>Failed to load page!</h1><br>Status: " + msg + ".");
+            $('#content').removeClass("loading");
+            $('#loader').css('opacity', '0');
+            inUse.splice(0, 1);
+        });
+    }, 250);
 }
