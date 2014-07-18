@@ -439,7 +439,8 @@ tr:hover td {
   height: 100%;
   width: 6px;
   display: inline-block;
-  
+  color: #4B4B4B;
+  box-shadow: 1px 1px 1px #0f0f0f;
   -webkit-animation: stretchdelay 1.2s infinite ease-in-out;
   animation: stretchdelay 1.2s infinite ease-in-out;
 }
