@@ -33,9 +33,8 @@ function checkURL(hash){
 function loadPage(url){
     url=url.replace('#page','');
     $.ajax({
-        type: "POST",
-        url: "loadPage.php",
-        data: 'page='+url,
+        type: "GET",
+        url: "/pages/" + url,
         dataType: "html",
         success: function(msg){
             if(parseInt(msg)!=0){
