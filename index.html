@@ -20,7 +20,7 @@
 			</nav>
             <div class="content" id="content">
 				<div class="rightButtons">
-					<a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/files/" class="btn" tooltip="Latest version (.JAR)"><i class="fa fa-download"></i> Latest<span id='bukkit_latestver'></span></a>
+					<a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/files/" class="btn" id="latestdl" tooltip="Latest version (.JAR)"><i class="fa fa-download"></i> Latest<span id='bukkit_latestver'></span></a>
 					<a href="https://github.com/StashCat/PlugProtect/zipball/master" class="btn" tooltip="Current source (.ZIP)"><i class="fa fa-file-zip-o"></i> Source</a>
 					<a href="https://github.com/StashCat/PlugProtect/" class="btn" tooltip="View this project on GitHub"><i class="fa fa-github"></i> GitHub</a>
 				</div>
@@ -40,8 +40,11 @@
         function changeSideClass(item) {$('#side ul li a').removeClass('active');$(item).addClass('active');}
         $('#side ul li a').click(function() {changeSideClass(this);});
         $.get("http://projects.stashcat.me/~other/getBukkitData.php?id=82179&getlatest", function(data) {
-	  if (data != "-1")
-  	  	$("#bukkit_latestver").html(" (" + data + ")");
+	  if (data != "-1"){
+	  	var json = $.parseJSON(data);
+  	  	$("#bukkit_latestver").html(" (" + json.version + ")");
+  	  	$("#latestdl").attr("href", json.link)
+	  }
 	});
     </script>
     </body>
