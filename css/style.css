@@ -11,7 +11,7 @@ body {
     font-family: 'Open Sans', sans-serif;
 	background: rgb(200,200,200);
 	line-height: 1.4em;
-	min-width: 1052px;
+    min-width: 880px
 }
 
 nav {
@@ -33,9 +33,9 @@ nav small {
 
 .container {
 	position: absolute;
-	top: 100px;
-	left: 200px;
-	right: 200px;
+	top: 50px;
+	left: 100px;
+	right: 100px;
 	margin-bottom: 100px;
 	width: auto;
 	height: auto;
@@ -70,12 +70,12 @@ nav small {
 }
 
 .footer {
-	background: rgb(249,249,249);
+	background: #fff;
 	text-align: center;
 	vertical-align: center;
 	color: rgb(22,22,22);
 	text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
-	padding-top: 10px;
+	padding: 10px;
 }
 
 a {
@@ -261,8 +261,8 @@ h1, h2, h3, h4, h5, h6  {
     border-radius: 5px;
     bottom: 31px;
     color: #fff;
+    left: 0;
     content: attr(tooltip);
-    left: -50%;
     padding: 10px 20px;
     position: absolute;
     z-index: 98;
@@ -275,6 +275,20 @@ h1, h2, h3, h4, h5, h6  {
 
 .btn[tooltip]:hover:before {
 	bottom: 39px;
+}
+
+.rightButtons .btn[tooltip]:before {
+    -moz-transform: rotate(-180deg);
+    -webkit-transform: rotate(-180deg);
+    transform: rotate(-180deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=2);
+    bottom: -9px;
+}
+
+.rightButtons .btn[tooltip]:after {
+    bottom: -45px;
+    left: initial;
+    right: 0;
 }
 
 [tooltip]:hover:before {
@@ -330,6 +344,10 @@ td, tr {
     transition: all .15s ease-in-out;
     -moz-transition: all .15s ease-in-out;
     -webkit-transition: all .15s ease-in-out;
+}
+
+tr.separator td{
+    border-bottom: 2px solid rgba(0,0,0,0.05);
 }
 
 tr:hover td {
@@ -429,18 +447,16 @@ tr:hover td {
 }
 
 .spinner {
-  margin: 100px auto;
-  width: 50px;
-  height: 30px;
-  text-align: center;
-  font-size: 10px;
-  position: absolute;
-  top: 75px;
-  left: 0;
-  right: 0;
-  transition: opacity .25s ease-in-out;
-  -moz-transition: opacity .25s ease-in-out;
-  -webkit-transition: opacity .25s ease-in-out;
+    position: absolute;
+    top: -84px;
+    left: 100px;
+    width: 50px;
+    height: 30px;
+    text-align: center;
+    font-size: 10px;
+    transition: opacity .25s ease-in-out;
+    -moz-transition: opacity .25s ease-in-out;
+    -webkit-transition: opacity .25s ease-in-out;
 }
 
 .spinner > div {
@@ -487,4 +503,33 @@ tr:hover td {
     transform: scaleY(1.0);
     -webkit-transform: scaleY(1.0);
   }
+}
+
+@media all and (max-width: 1040px) {
+    .container {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        right: 0px;
+    }
+}
+
+@media all and (max-width: 880px) {
+    .container {
+        position: relative;
+    }
+    
+    .rightButtons {
+        float: right;
+        position: relative;
+        right: 0px;
+        top: -22px;
+    }
+    
+    .spinner {
+        position: absolute;
+        top: -85px;
+        left: 120px;
+        right: none;
+    }
 }
