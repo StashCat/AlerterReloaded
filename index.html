@@ -51,6 +51,7 @@
 			  	var json = $.parseJSON(data);
   	  			$("#bukkit_latestver").html(" (" + json.version + ")");
   	  			$("#latestdl").attr("href", json.link);
+  	  			changeClass($('a[href^="#home"]'));
 			  }
 			});
     		</script>
