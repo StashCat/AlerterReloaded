@@ -1,59 +1,59 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link href="css/fonts.css" rel="stylesheet"/>
+	<head>
+		<link href="css/fonts.css" rel="stylesheet"/>
 		<link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>PlugProtect</title>
-        <link href="css/style.css" rel="stylesheet"/>
-    </head>
-    <body>
-        <div class="container">
-            <nav id="nav">
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>PlugProtect</title>
+		<link href="css/style.css" rel="stylesheet"/>
+	</head>
+	<body>
+		<div class="container">
+            		<nav id="nav">
 				<a href="/"><p><i class="fa fa-shield"></i> PlugProtect</p></a>
 				<ul>
 					<li><a href="https://github.com/StashCat/PlugProtect/wiki">Wiki</a></li
 					><!--<li><a href="#" onclick="return false;">Menu Item 2</a></li>-->
 				</ul>
-			</nav>
-            <div class="content" id="content">
 				<div class="rightButtons">
 					<a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/files/" class="btn" id="latestdl" tooltip="Latest version (.JAR)"><i class="fa fa-download"></i> Latest<span id='bukkit_latestver'></span></a>
 					<a href="https://github.com/StashCat/PlugProtect/zipball/master" class="btn" tooltip="Current source (.ZIP)"><i class="fa fa-file-zip-o"></i> Source</a>
 					<a href="https://github.com/StashCat/PlugProtect/" class="btn" tooltip="View this project on GitHub"><i class="fa fa-github"></i> GitHub</a>
 				</div>
+			</nav>
+			<div class="content" id="content">
 				<h5>A successor to the popular old and now-abandoned Alerter protection plugin.</h5><br>
 				PlugProtect is aimed to be a successor to the old and popular protection plugin Alerter, which got abandoned by the developer a few years ago. It's pretty straight-forward, easy to use and useful.<br><br>
 				<a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/" class="btn" tooltip="Approved updates, full docs and fast support">DBO Page</a>
 				<a href="http://www.spigotmc.org/resources/plugprotect.727/" class="btn" tooltip="Instant updates, ugly-ish docs and slow support">Spigot Page</a>
-            </div>
-            <div class="spinner" id="loader">
-            	<div class="rect1"></div>
-            	<div class="rect2"></div>
-	        <div class="rect3"></div>
-	        <div class="rect4"></div>
-            	<div class="rect5"></div>
-            </div>
-            <div class="footer">
-            	Developed by <a href="http://stashcat.me/">StashCat</a> | Hosted by <a href="http://github.com/"><i class="fa fa-github"></i> GitHub</a>
-            </div>
-        </div>
-        <script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
-        <script src="/js/ajax.js"></script>
-        <script>
-        function changeNavClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
-        $('#nav ul li a').click(function() {changeNavClass(this);});
-        function changeSideClass(item) {$('#side ul li a').removeClass('active');$(item).addClass('active');}
-        $('#side ul li a').click(function() {changeSideClass(this);});
-        $.get("http://projects.stashcat.me/~other/getBukkitData.php?id=82179&getlatest", function(data) {
-	  if (data != "-1"){
-	  	var json = $.parseJSON(data);
-  	  	$("#bukkit_latestver").html(" (" + json.version + ")");
-  	  	$("#latestdl").attr("href", json.link)
-	  }
-	});
-    </script>
-    </body>
+            		</div>
+            		<div class="spinner" id="loader">
+            			<div class="rect1"></div>
+	            		<div class="rect2"></div>
+	        		<div class="rect3"></div>
+		        	<div class="rect4"></div>
+            			<div class="rect5"></div>
+        		 </div>
+            		<div class="footer">
+            			Developed by <a href="http://stashcat.me/">StashCat</a> | Hosted by <a href="http://github.com/"><i class="fa fa-github"></i> GitHub</a>
+            		</div>
+        	</div>
+        	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
+        	<script src="/js/ajax.js"></script>
+		 <script>
+        		function changeNavClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
+			 $('#nav ul li a').click(function() {changeNavClass(this);});
+        		function changeSideClass(item) {$('#side ul li a').removeClass('active');$(item).addClass('active');}
+			 $('#side ul li a').click(function() {changeSideClass(this);});
+        		$.get("http://projects.stashcat.me/~other/getBukkitData.php?id=82179&getlatest", function(data) {
+			  if (data != "-1"){
+			  	var json = $.parseJSON(data);
+  	  			$("#bukkit_latestver").html(" (" + json.version + ")");
+  	  			$("#latestdl").attr("href", json.link)
+			 }
+			});
+    		</script>
+	</body>
 </html>
