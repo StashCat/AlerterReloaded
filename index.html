@@ -14,8 +14,10 @@
             		<nav id="nav">
 				<a href="/"><p><i class="fa fa-shield"></i> PlugProtect</p></a>
 				<ul>
-					<li><a href="https://github.com/StashCat/PlugProtect/wiki">Wiki</a></li
-					><!--<li><a href="#" onclick="return false;">Menu Item 2</a></li>-->
+					<li><a href="#pagehome" id="home" onclick="return false;">Home</a></li
+					><li><a href="#pagechangelog" id="changelog" onclick="return false;">Changelog</a></li
+					><li><a href="https://github.com/StashCat/PlugProtect/wiki">Wiki</a></li
+					>
 				</ul>
 				<div class="rightButtons">
 					<a href="http://dev.bukkit.org/bukkit-plugins/alerter-reloaded/files/" class="btn" id="latestdl" tooltip="Latest version (.JAR)"><i class="fa fa-download"></i> Latest<span id='bukkit_latestver'></span></a>
@@ -42,7 +44,7 @@
         	</div>
         	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
         	<script src="/js/ajax.js"></script>
-		 <script>
+		<script>
         		function changeNavClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
 			 $('#nav ul li a').click(function() {changeNavClass(this);});
         		function changeSideClass(item) {$('#side ul li a').removeClass('active');$(item).addClass('active');}
@@ -51,8 +53,8 @@
 			  if (data != "-1"){
 			  	var json = $.parseJSON(data);
   	  			$("#bukkit_latestver").html(" (" + json.version + ")");
-  	  			$("#latestdl").attr("href", json.link)
-			 }
+  	  			$("#latestdl").attr("href", json.link);
+			  }
 			});
     		</script>
 	</body>
