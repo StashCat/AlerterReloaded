@@ -24,9 +24,9 @@ function checkURL(hash){
             transition = true;
             $('#loader').css('opacity', '1');
             $('#content').toggleClass("loading");
-            changeClass($('#'+hash.replace('#page', '')));
             setTimeout(function(){loadPage(hash);}, 200);
         }
+        changeClass($('a[href^="' + hash.replace('#page', '') + '"]'));
     }
 }
 
