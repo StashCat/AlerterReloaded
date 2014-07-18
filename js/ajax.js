@@ -26,7 +26,7 @@ function checkURL(hash){
             $('#content').toggleClass("loading");
             setTimeout(function(){loadPage(hash);}, 200);
         }
-        changeClass($('a[href^="' + hash.replace('#page', '') + '"]'));
+        changeClass($('a[href^="' + hash.replace('page', '') + '"]'));
     }
 }
 
