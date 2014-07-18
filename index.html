@@ -45,10 +45,7 @@
         	<script src="http://code.jquery.com/jquery-2.1.0.min.js"></script>
         	<script src="/js/ajax.js"></script>
 		<script>
-        		function changeNavClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
-			 $('#nav ul li a').click(function() {changeNavClass(this);});
-        		function changeSideClass(item) {$('#side ul li a').removeClass('active');$(item).addClass('active');}
-			 $('#side ul li a').click(function() {changeSideClass(this);});
+        		function changeClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
         		$.get("http://projects.stashcat.me/~other/getBukkitData.php?id=82179&getlatest", function(data) {
 			  if (data != "-1"){
 			  	var json = $.parseJSON(data);
