@@ -24,7 +24,7 @@ function checkURL(hash){
             transition = true;
             $('#loader').css('opacity', '1');
             $('#content').toggleClass("loading");
-            changeNavClass($('#'+hash.replace('#page', '')));
+            changeClass($('#'+hash.replace('#page', '')));
             setTimeout(function(){loadPage(hash);}, 200);
         }
     }
