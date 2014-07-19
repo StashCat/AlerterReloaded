@@ -10,10 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 
 import me.stashcat.PlugProtect.Listeners.Signs;
 import me.stashcat.PlugProtect.Metrics.Metrics;
+import me.stashcat.PlugProtect.Updater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -55,28 +55,30 @@ public class Main extends JavaPlugin {
 		saveDefaultCConfig();
 		saveCConfig();
 		if (getConfig().getBoolean("auto-update")){
-			//@SuppressWarnings("unused")
-			//Updater updater = new Updater(this, 82179, this.getFile(), Updater.UpdateType.DEFAULT, false);
+			@SuppressWarnings("unused")
+			Updater updater = new Updater(this, 82179, this.getFile(), Updater.UpdateType.DEFAULT, false);
 		}
 		initWand();
 		if (getConfig().getBoolean("send-stats"))
 			try {
 				Metrics = new Metrics(this);
 				Metrics.start();
-				getLogger().log(Level.INFO, "Metrics successfully started!");
+				getLogger().info("Metrics successfully started!");
 			} catch (IOException e) {
-				getLogger().log(Level.WARNING, "Could not start Metrics!");
-				getLogger().log(Level.WARNING, "\"" + e.getMessage() + "\"");
+				getLogger().warning("Could not start Metrics!");
+				getLogger().warning("\"" + e.getMessage() + "\"");
 			}
+		else
+			getLogger().info("Metrics not starting, disabled in config :(");
 		Areas = new Areas(this);
 		MainListener = new MainListener(this);
 		Signs = new Signs(this);
 		prefix = "[" + ChatColor.GREEN + ChatColor.BOLD + getDescription().getName() + ChatColor.RESET + "] ";
-		getLogger().log(Level.INFO, getDescription().getFullName() + " Enabled!");
+		getLogger().info(getDescription().getFullName() + " Enabled!");
 	}
 	
 	public void onDisable(){
-		System.out.println(getDescription().getFullName() + " Disabled!");
+		getLogger().info(getDescription().getFullName() + " Disabled!");
 		restoreAllInventories();
 	}
 	

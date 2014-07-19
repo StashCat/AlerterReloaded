@@ -1,6 +1,6 @@
 name: PlugProtect
 main: me.stashcat.PlugProtect.Main
-version: 1.2b
+version: 1.1.1b
 description: A successor to the popular old and now-abandoned Alerter protection plugin.
 author: StashCat
 commands:
