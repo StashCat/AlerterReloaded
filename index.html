@@ -50,6 +50,7 @@
 			var json = $.parseJSON(data);
 			if (json.error === undefined){
 				console.log("Error \"" + json.error + "\": " + json.more);
+				console.log(json);
 			} else {
 				$("#bukkit_latestver").html(" (" + json.version + ")");
   	  			$("#latestdl").attr("href", json.link);
