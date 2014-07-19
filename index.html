@@ -48,7 +48,7 @@
         		function changeClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
         		$.get("http://projects.stashcat.me/~other/getBukkitData.php?bkid=82179&getlatest", function(data) {
 			var json = $.parseJSON(data);
-			if (json.error === undefined){
+			if (json.error !== undefined && json.error != null){
 				console.log("Error \"" + json.error + "\": " + json.more);
 				console.log(json);
 			} else {
