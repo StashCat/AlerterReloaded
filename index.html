@@ -46,13 +46,15 @@
         	<script src="js/ajax.js"></script>
 		<script>
         		function changeClass(item) {$('#nav ul li').removeClass('active');$(item.parentNode).addClass('active');}
-        		$.get("http://projects.stashcat.me/~other/getBukkitData.php?id=82179&getlatest", function(data) {
-			  if (data != "-1"){
-			  	var json = $.parseJSON(data);
-  	  			$("#bukkit_latestver").html(" (" + json.version + ")");
+        		$.get("http://projects.stashcat.me/~other/getBukkitData.php?bkid=82179&getlatest", function(data) {
+			var json = $.parseJSON(data);
+			if (json.error !== undefined){
+	  	  		$("#bukkit_latestver").html(" (" + json.version + ")");
   	  			$("#latestdl").attr("href", json.link);
   	  			changeClass($('a[href^="#home"]'));
-			  }
+			} else {
+				console.log("Error \"" + json.error + "\": " + json.more)
+			}
 			});
     		</script>
 	</body>
