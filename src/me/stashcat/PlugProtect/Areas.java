@@ -12,7 +12,9 @@ public class Areas {
 	}
 	
 	public boolean exists(String area){
-		return pl.getCConfig().getString(area) == null;
+		if (area == null)
+			return false;
+		return pl.getCConfig().getString(area) != null;
 	}
 	
 	public String getWelcomeMessage(String area, String pname){
@@ -152,6 +154,12 @@ public class Areas {
 	
 	public boolean canBuild(String area, String pname){
 		if (pl.getCConfig().getString(area + ".owner").equals(pname) || pl.getCConfig().getList(area + ".whitelist").contains(pname))
+			return true;
+		return false;
+	}
+	
+	public boolean isRestricted(String area){
+		if (pl.getCConfig().getBoolean(area + ".restricted"))
 			return true;
 		return false;
 	}

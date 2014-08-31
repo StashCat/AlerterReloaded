@@ -56,7 +56,7 @@ public class Main extends JavaPlugin {
 		saveCConfig();
 		if (getConfig().getBoolean("auto-update")){
 			@SuppressWarnings("unused")
-			Updater updater = new Updater(this, 82179, this.getFile(), Updater.UpdateType.DEFAULT, false);
+			Updater updater = new Updater(this, 82179, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
 		}
 		initWand();
 		if (getConfig().getBoolean("send-stats"))
@@ -399,6 +399,27 @@ public class Main extends JavaPlugin {
 				String setting = null;
 				if (welcome) setting = "welcome"; else setting = "farewell";
 				sendMsg(s, false, "&cYou must specify an area to set the " + setting + " message of!");
+				return true;
+			} else if (args.length == 2 && args[0].equalsIgnoreCase("restrictentry")){
+				if (Areas.exists(args[1])){
+					sendMsg(s, false, "&cArea &a" + args[1] + "&c does not exist.");
+					return true;
+				}
+				if (!Areas.isOwner(args[1], s.getName()) && !s.hasPermission("plugprotect.setmsg.other")){
+					sendMsg(s, false, "&cThe area &a" + args[1] + "&c does not belong to you.");
+					return true;
+				}
+				getCConfig().set(args[1] + ".restricted", !Areas.isRestricted(args[1]));
+				saveCConfig();
+				String restrict = null;
+				if (Areas.isRestricted(args[1]))
+					restrict = "restricted";
+				else
+					restrict = "unrestricted";
+				sendMsg(s, false, "&aSuccessfully set &2" + args[1] + "&a to &2" + restrict + "&a!");
+				return true;
+			} else if (args.length == 1 && args[0].equalsIgnoreCase("restrictentry")){
+				sendMsg(s, false, "&cYou must specify the area you want to restrict entry of!");
 				return true;
 			}
 			sendMsg(s, false, "&cInvalid arguments! Use &r/pp help&c to see help.");

@@ -38,7 +38,7 @@ public class Signs implements Listener {
 			String[] l = e.getLines();
 			if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[Private]")){
 				e.setLine(0, "[" + ChatColor.DARK_GREEN + ChatColor.BOLD + "Private" + ChatColor.RESET + "]");
-				if (ChatColor.stripColor(l[1]).isEmpty())
+				if (l[1].isEmpty() && !l[2].equals(p.getName()) && !l[3].equals(p.getName()))
 					e.setLine(1, p.getName());
 				s.update();
 			}
@@ -46,9 +46,9 @@ public class Signs implements Listener {
 				e.setLine(0, "[" + ChatColor.DARK_GREEN + ChatColor.BOLD + "More" + ChatColor.RESET + "]");
 				s.update();
 			}
-			if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[Sell]")){
-				
-			}
+			//if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[Sell]")){
+			//	
+			//}
 		}
 	}
 	
@@ -61,7 +61,7 @@ public class Signs implements Listener {
 		if (b.getType() == Material.SIGN_POST || b.getType() == Material.WALL_SIGN){
 			Sign s = (Sign)b.getState();
 			String[] l = s.getLines();
-			if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[Private]") || ChatColor.stripColor(l[0]).equalsIgnoreCase("[More]") || ChatColor.stripColor(l[0]).equalsIgnoreCase("[Sell]")){
+			if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[Private]") || ChatColor.stripColor(l[0]).equalsIgnoreCase("[More]") /*|| ChatColor.stripColor(l[0]).equalsIgnoreCase("[Sell]")*/){
 				if (!Arrays.asList(l).contains(p.getName()) && !p.hasPermission("plugprotect.bypass")){
 					pl.sendMsg(p, false, "&cThis sign is protected!");
 					e.setCancelled(true);
@@ -155,7 +155,7 @@ public class Signs implements Listener {
 					e.setCancelled(false);
 				}
 				if (e.isCancelled())
-					pl.sendMsg(p, false, "&cThis chest is container.");
+					pl.sendMsg(p, false, "&cThis container is protected.");
 			}
 		}
 	}

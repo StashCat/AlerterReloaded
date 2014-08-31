@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 public class MainListener implements Listener {
 	Main pl;
@@ -73,6 +74,23 @@ public class MainListener implements Listener {
 				}
 			}
 		}
+	}
+	
+	@EventHandler
+	public void onHit(EntityDamageByEntityEvent e){
+		if (!(e.getDamager() instanceof Player))
+			return;
+		Player p = (Player)e.getEntity();
+		if (pl.settingArea.containsKey(p.getName()))
+			e.setCancelled(true);
+	}
+	
+	@EventHandler
+	public void onDeath(EntityDamageByEntityEvent e){
+		if (!((Player)e.getEntity() instanceof Player))
+			return;
+		Player p = (Player)e.getEntity();
+		pl.restoreInventory(p);
 	}
 	
 	@EventHandler
@@ -268,6 +286,21 @@ public class MainListener implements Listener {
 		Entity targ = e.getTarget();
 		if (pl.Areas.getArea(ent.getLocation()) != null || pl.Areas.getArea(targ.getLocation()) != null){
 			e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onEnterProtectedArea(PlayerMoveEvent e){
+		if (e.isCancelled())
+			return;
+		String area = pl.Areas.getArea(e.getTo());
+		Player p = e.getPlayer();
+		if (pl.Areas.exists(area) && pl.Areas.isRestricted(area) && !pl.Areas.canBuild(area, p.getName())){
+			Vector v = e.getTo().toVector().subtract(e.getFrom().toVector()).normalize();
+			p.setVelocity(v.multiply(5));
+			pl.sendMsg(p, false, "&cThis area is protected!");
+		} else {
+			pl.sendMsg(p, false, "else");
 		}
 	}
 }
