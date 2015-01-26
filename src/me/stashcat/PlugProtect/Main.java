@@ -454,7 +454,8 @@ public class Main extends JavaPlugin {
         // Look for defaults in the jar
         InputStream defConfigStream = getResource("data.yml");
         if (defConfigStream != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+            @SuppressWarnings("deprecation")
+			YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             data.setDefaults(defConfig);
         }
     }
