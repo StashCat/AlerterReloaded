@@ -11,9 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import me.stashcat.PlugProtect.Listeners.AreaListener;
 import me.stashcat.PlugProtect.Listeners.Signs;
 import me.stashcat.PlugProtect.Metrics.Metrics;
-import me.stashcat.PlugProtect.Updater.Updater;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -34,14 +34,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class Main extends JavaPlugin {
 	
 	private String prefix;
-	public MainListener MainListener;
-	Map<String, ItemStack[]> settingArea = new HashMap<String, ItemStack[]>();
-	Map <String, ItemStack[]> armour = new HashMap <String, ItemStack[]>();
-	Map<String, String> settingWelcome = new HashMap<String, String>();
-	Map<String, String> settingFarewell = new HashMap<String, String>();
-	Map<String, String> modifying = new HashMap<String, String>();
-	Map<String, Location> pos1 = new HashMap<String, Location>();
-	Map<String, Location> pos2 = new HashMap<String, Location>();
+	public AreaListener AreaListener;
+	public Map<String, ItemStack[]> settingArea = new HashMap<String, ItemStack[]>();
+	public Map <String, ItemStack[]> armour = new HashMap <String, ItemStack[]>();
+	public Map<String, String> settingWelcome = new HashMap<String, String>();
+	public Map<String, String> settingFarewell = new HashMap<String, String>();
+	public Map<String, String> modifying = new HashMap<String, String>();
+	public Map<String, Location> pos1 = new HashMap<String, Location>();
+	public Map<String, Location> pos2 = new HashMap<String, Location>();
 	private FileConfiguration data = null;
 	private File dataFile = null;
 	private ItemStack wand;
@@ -54,10 +54,6 @@ public class Main extends JavaPlugin {
 		saveConfig();
 		saveDefaultCConfig();
 		saveCConfig();
-		if (getConfig().getBoolean("auto-update")){
-			@SuppressWarnings("unused")
-			Updater updater = new Updater(this, 82179, this.getFile(), Updater.UpdateType.NO_DOWNLOAD, false);
-		}
 		initWand();
 		if (getConfig().getBoolean("send-stats"))
 			try {
@@ -71,7 +67,7 @@ public class Main extends JavaPlugin {
 		else
 			getLogger().info("Metrics not starting, disabled in config :(");
 		Areas = new Areas(this);
-		MainListener = new MainListener(this);
+		AreaListener = new AreaListener(this);
 		Signs = new Signs(this);
 		prefix = "[" + ChatColor.GREEN + ChatColor.BOLD + getDescription().getName() + ChatColor.RESET + "] ";
 		getLogger().info(getDescription().getFullName() + " Enabled!");

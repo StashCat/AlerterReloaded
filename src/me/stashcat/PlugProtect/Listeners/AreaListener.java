@@ -1,8 +1,9 @@
-package me.stashcat.PlugProtect;
+package me.stashcat.PlugProtect.Listeners;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import me.stashcat.PlugProtect.Main;
 import me.stashcat.PlugProtect.Events.PlayerEnterProtectedAreaEvent;
 import me.stashcat.PlugProtect.Events.PlayerLeaveProtectedAreaEvent;
 
@@ -31,11 +32,11 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
-public class MainListener implements Listener {
+public class AreaListener implements Listener {
 	Main pl;
 	Map<String, String> inArea = new HashMap<String, String>();
 	
-	public MainListener(Main Main){
+	public AreaListener(Main Main){
 		pl = Main;
 		pl.getServer().getPluginManager().registerEvents(this, pl);
 	}
