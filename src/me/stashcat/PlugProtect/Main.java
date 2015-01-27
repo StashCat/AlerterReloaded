@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 
 import me.stashcat.PlugProtect.Listeners.AreaListener;
-import me.stashcat.PlugProtect.Listeners.Signs;
 import me.stashcat.PlugProtect.Metrics.Metrics;
 
 import org.bukkit.ChatColor;
@@ -46,7 +45,6 @@ public class Main extends JavaPlugin {
 	private File dataFile = null;
 	private ItemStack wand;
 	public Areas Areas;
-	public Signs Signs;
 	Metrics Metrics;
 	
 	public void onEnable(){
@@ -68,7 +66,6 @@ public class Main extends JavaPlugin {
 			getLogger().info("Metrics not starting, disabled in config :(");
 		Areas = new Areas(this);
 		AreaListener = new AreaListener(this);
-		Signs = new Signs(this);
 		prefix = "[" + ChatColor.GREEN + ChatColor.BOLD + getDescription().getName() + ChatColor.RESET + "] ";
 		getLogger().info(getDescription().getFullName() + " Enabled!");
 	}

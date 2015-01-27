@@ -29,6 +29,7 @@ public class AreaListener implements Listener {
 	Wand Wand;
 	Alerts Alerts;
 	Chat Chat;
+	Signs Signs;
 	
 	public AreaListener(Main Main){
 		pl = Main;
@@ -36,6 +37,7 @@ public class AreaListener implements Listener {
 		Wand = new Wand(pl);
 		Alerts = new Alerts(pl);
 		Chat = new Chat(pl);
+		Signs = new Signs(pl);
 	}
 	
 	@EventHandler
