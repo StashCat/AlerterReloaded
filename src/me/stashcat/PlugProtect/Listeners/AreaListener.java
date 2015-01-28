@@ -37,7 +37,8 @@ public class AreaListener implements Listener {
 		Wand = new Wand(pl);
 		Alerts = new Alerts(pl);
 		Chat = new Chat(pl);
-		Signs = new Signs(pl);
+		if (pl.getConfig().getBoolean("modules.signs"))
+			Signs = new Signs(pl);
 	}
 	
 	@EventHandler

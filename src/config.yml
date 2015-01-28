@@ -4,3 +4,6 @@ send-stats: true
 warn:
   water: true
   lava: true
+
+modules:
+  signs: true
