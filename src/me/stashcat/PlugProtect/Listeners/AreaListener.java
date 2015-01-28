@@ -23,7 +23,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
-public class AreaListener implements Listener {
+public class AreaListener extends Main implements Listener {
 	Map<String, String> inArea = new HashMap<String, String>();
 	Main pl;
 	Wand Wand;
@@ -33,11 +33,11 @@ public class AreaListener implements Listener {
 	
 	public AreaListener(Main Main){
 		pl = Main;
-		pl.getServer().getPluginManager().registerEvents(this, pl);
+		getServer().getPluginManager().registerEvents(this, pl);
 		Wand = new Wand(pl);
 		Alerts = new Alerts(pl);
 		Chat = new Chat(pl);
-		if (pl.getConfig().getBoolean("modules.signs"))
+		if (getConfig().getBoolean("modules.signs"))
 			Signs = new Signs(pl);
 	}
 	
@@ -46,22 +46,22 @@ public class AreaListener implements Listener {
 		Player p = e.getPlayer();
 		Location loc = e.getTo();
 		Location locFrom = e.getFrom();
-		String key = pl.Areas.getArea(loc);
-		String keyFrom = pl.Areas.getArea(locFrom);
-		if (!inArea.containsKey(p.getName()) && pl.Areas.isProtected(loc)){
+		String key = Areas.getArea(loc);
+		String keyFrom = Areas.getArea(locFrom);
+		if (!inArea.containsKey(p.getName()) && Areas.isProtected(loc)){
 			inArea.put(p.getName(), key);
-			pl.sendMsg(p, false, pl.Areas.getWelcomeMessage(key, pl.getCConfig().getString(key + ".owner")));
-			PlayerEnterProtectedAreaEvent event = new PlayerEnterProtectedAreaEvent(p, key, pl.Areas.getWelcomeMessage(key, p.getName()));
-			pl.getServer().getPluginManager().callEvent(event);
-		} else if (inArea.containsKey(p.getName()) && inArea.get(p.getName()).equals(keyFrom) && !pl.Areas.isProtected(loc)) {
+			sendMsg(p, false, Areas.getWelcomeMessage(key, getCConfig().getString(key + ".owner")));
+			PlayerEnterProtectedAreaEvent event = new PlayerEnterProtectedAreaEvent(p, key, Areas.getWelcomeMessage(key, p.getName()));
+			getServer().getPluginManager().callEvent(event);
+		} else if (inArea.containsKey(p.getName()) && inArea.get(p.getName()).equals(keyFrom) && !Areas.isProtected(loc)) {
 			inArea.remove(p.getName());
-			pl.sendMsg(p, false, pl.Areas.getFarewellMessage(keyFrom, pl.getCConfig().getString(keyFrom + ".owner")));
-			PlayerLeaveProtectedAreaEvent event = new PlayerLeaveProtectedAreaEvent(p, keyFrom, pl.Areas.getFarewellMessage(keyFrom, p.getName()));
-			pl.getServer().getPluginManager().callEvent(event);
-		} else if (inArea.containsKey(p.getName()) && !pl.Areas.isProtected(loc)) {
+			sendMsg(p, false, Areas.getFarewellMessage(keyFrom, getCConfig().getString(keyFrom + ".owner")));
+			PlayerLeaveProtectedAreaEvent event = new PlayerLeaveProtectedAreaEvent(p, keyFrom, Areas.getFarewellMessage(keyFrom, p.getName()));
+			getServer().getPluginManager().callEvent(event);
+		} else if (inArea.containsKey(p.getName()) && !Areas.isProtected(loc)) {
 			inArea.remove(p.getName());
 			PlayerLeaveProtectedAreaEvent event = new PlayerLeaveProtectedAreaEvent(p, null, null);
-			pl.getServer().getPluginManager().callEvent(event);
+			getServer().getPluginManager().callEvent(event);
 		}
 	}
 	
@@ -70,9 +70,9 @@ public class AreaListener implements Listener {
 		if (e.isCancelled())
 			return;
 		Player p = e.getPlayer();
-		if (pl.Areas.isProtected(e.getBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getBlock().getLocation()), p.getName())){
-				pl.sendMsg(p, false, "&cThis block is protected.");
+		if (Areas.isProtected(e.getBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
+			if (!Areas.canBuild(Areas.getArea(e.getBlock().getLocation()), p.getName())){
+				sendMsg(p, false, "&cThis block is protected.");
 				e.setCancelled(true);
 			}
 		}
@@ -83,9 +83,9 @@ public class AreaListener implements Listener {
 		if (e.isCancelled())
 			return;
 		Player p = e.getPlayer();
-		if (pl.Areas.isProtected(e.getBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getBlock().getLocation()), p.getName())){
-				pl.sendMsg(p, false, "&cThis area is protected.");
+		if (Areas.isProtected(e.getBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
+			if (!Areas.canBuild(Areas.getArea(e.getBlock().getLocation()), p.getName())){
+				sendMsg(p, false, "&cThis area is protected.");
 				e.setCancelled(true);
 			}
 		}
@@ -98,9 +98,9 @@ public class AreaListener implements Listener {
 		if (e.getClickedBlock() == null)
 			return;
 		Player p = e.getPlayer();
-		if (pl.Areas.isProtected(e.getClickedBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getClickedBlock().getLocation()), p.getName())){
-				pl.sendMsg(p, false, "&cThis block is protected.");
+		if (Areas.isProtected(e.getClickedBlock().getLocation()) && !p.hasPermission("plugprotect.bypass")){
+			if (!Areas.canBuild(Areas.getArea(e.getClickedBlock().getLocation()), p.getName())){
+				sendMsg(p, false, "&cThis block is protected.");
 				e.setCancelled(true);
 			}
 		}
@@ -111,9 +111,9 @@ public class AreaListener implements Listener {
 		if (e.isCancelled())
 			return;
 		Player p = e.getPlayer();
-		if (pl.Areas.isProtected(e.getRightClicked().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getRightClicked().getLocation()), p.getName())){
-				pl.sendMsg(p, false, "&cThis entity is protected.");
+		if (Areas.isProtected(e.getRightClicked().getLocation()) && !p.hasPermission("plugprotect.bypass")){
+			if (!Areas.canBuild(Areas.getArea(e.getRightClicked().getLocation()), p.getName())){
+				sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}
 		}
@@ -126,9 +126,9 @@ public class AreaListener implements Listener {
 		if (!(e.getDamager() instanceof Player))
 			return;
 		Player p = (Player)e.getDamager();
-		if (pl.Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
-				pl.sendMsg(p, false, "&cThis entity is protected.");
+		if (Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
+			if (!Areas.canBuild(Areas.getArea(e.getEntity().getLocation()), p.getName())){
+				sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}
 		}
@@ -141,9 +141,9 @@ public class AreaListener implements Listener {
 		if (!(e.getOwner() instanceof Player))
 			return;
 		Player p = (Player) e.getOwner();
-		if (pl.Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
-				pl.sendMsg(p, false, "&cThis entity is protected.");
+		if (Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
+			if (!Areas.canBuild(Areas.getArea(e.getEntity().getLocation()), p.getName())){
+				sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}
 		}
@@ -154,9 +154,9 @@ public class AreaListener implements Listener {
 		if (e.isCancelled())
 			return;
 		Player p = e.getPlayer();
-		if (pl.Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
-			if (!pl.Areas.canBuild(pl.Areas.getArea(e.getEntity().getLocation()), p.getName())){
-				pl.sendMsg(p, false, "&cThis entity is protected.");
+		if (Areas.isProtected(e.getEntity().getLocation()) && !p.hasPermission("plugprotect.bypass")){
+			if (!Areas.canBuild(Areas.getArea(e.getEntity().getLocation()), p.getName())){
+				sendMsg(p, false, "&cThis entity is protected.");
 				e.setCancelled(true);
 			}
 		}
@@ -168,7 +168,7 @@ public class AreaListener implements Listener {
 			return;
 		Entity ent = e.getEntity();
 		Entity targ = e.getTarget();
-		if (pl.Areas.getArea(ent.getLocation()) != null || pl.Areas.getArea(targ.getLocation()) != null){
+		if (Areas.getArea(ent.getLocation()) != null || Areas.getArea(targ.getLocation()) != null){
 			e.setCancelled(true);
 		}
 	}
@@ -177,14 +177,14 @@ public class AreaListener implements Listener {
 	public void onEnterProtectedArea(PlayerMoveEvent e){
 		if (e.isCancelled())
 			return;
-		String area = pl.Areas.getArea(e.getTo());
+		String area = Areas.getArea(e.getTo());
 		Player p = e.getPlayer();
-		if (pl.Areas.exists(area) && pl.Areas.isRestricted(area) && !pl.Areas.canBuild(area, p.getName())){
+		if (Areas.exists(area) && Areas.isRestricted(area) && !Areas.canBuild(area, p.getName())){
 			Vector v = e.getTo().toVector().subtract(e.getFrom().toVector()).normalize();
 			p.setVelocity(v.multiply(5));
-			pl.sendMsg(p, false, "&cThis area is protected!");
+			sendMsg(p, false, "&cThis area is protected!");
 		} else {
-			pl.sendMsg(p, false, "else");
+			sendMsg(p, false, "else");
 		}
 	}
 }

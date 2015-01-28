@@ -19,12 +19,12 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-public class Signs implements Listener {
+public class Signs extends Main implements Listener {
 	Main pl;
 
 	public Signs(Main Main){
 		pl = Main;
-		pl.getServer().getPluginManager().registerEvents(this, pl);
+		getServer().getPluginManager().registerEvents(this, pl);
 	}
 	
 	@EventHandler
@@ -63,7 +63,7 @@ public class Signs implements Listener {
 			String[] l = s.getLines();
 			if (ChatColor.stripColor(l[0]).equalsIgnoreCase("[Private]") || ChatColor.stripColor(l[0]).equalsIgnoreCase("[More]") /*|| ChatColor.stripColor(l[0]).equalsIgnoreCase("[Sell]")*/){
 				if (!Arrays.asList(l).contains(p.getName()) && !p.hasPermission("plugprotect.bypass")){
-					pl.sendMsg(p, false, "&cThis sign is protected!");
+					sendMsg(p, false, "&cThis sign is protected!");
 					e.setCancelled(true);
 				}
 			}
@@ -82,7 +82,7 @@ public class Signs implements Listener {
 			Set<Sign> signs = new HashSet<Sign>();
 			for (double yl = y - 2; yl <= y + 3; yl++){
 				loc.setY(yl);
-				Set<Block> ba = pl.getBlocksAround(loc);
+				Set<Block> ba = getBlocksAround(loc);
 				for (Block bl : ba){
 					if (bl.getType() == Material.WALL_SIGN || bl.getType() == Material.SIGN_POST){
 						signs.add((Sign)bl.getState());
@@ -107,11 +107,11 @@ public class Signs implements Listener {
 					}
 				}
 				if (p.hasPermission("plugprotect.bypass")){
-					pl.sendMsg(p, false, "&cWARNING: You are accessing a protected door.");
+					sendMsg(p, false, "&cWARNING: You are accessing a protected door.");
 					e.setCancelled(false);
 				}
 				if (e.isCancelled())
-					pl.sendMsg(p, false, "&cThis door is protected.");
+					sendMsg(p, false, "&cThis door is protected.");
 			}
 		}
 	}
@@ -126,7 +126,7 @@ public class Signs implements Listener {
 			Set<Sign> signs = new HashSet<Sign>();
 			for (double yl = y - 1; yl <= y + 1; yl++){
 				loc.setY(yl);
-				Set<Block> ba = pl.getBlocksAround(loc);
+				Set<Block> ba = getBlocksAround(loc);
 				for (Block bl : ba){
 					if (bl.getType() == Material.WALL_SIGN || bl.getType() == Material.SIGN_POST){
 						signs.add((Sign)bl.getState());
@@ -151,11 +151,11 @@ public class Signs implements Listener {
 					}
 				}
 				if (p.hasPermission("plugprotect.bypass")){
-					pl.sendMsg(p, false, "&cWARNING: You are accessing a protected container.");
+					sendMsg(p, false, "&cWARNING: You are accessing a protected container.");
 					e.setCancelled(false);
 				}
 				if (e.isCancelled())
-					pl.sendMsg(p, false, "&cThis container is protected.");
+					sendMsg(p, false, "&cThis container is protected.");
 			}
 		}
 	}

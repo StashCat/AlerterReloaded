@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 
-public class Areas {
+public class Areas extends Main {
 	Main pl;
 	
 	public Areas(Main Main){
@@ -14,26 +14,26 @@ public class Areas {
 	public boolean exists(String area){
 		if (area == null)
 			return false;
-		return pl.getCConfig().getString(area) != null;
+		return getCConfig().getString(area) != null;
 	}
 	
 	public String getWelcomeMessage(String area, String pname){
-		String msg = pl.getCConfig().getString(area + ".welcome");
+		String msg = getCConfig().getString(area + ".welcome");
 		if (msg == null)
 			msg = "Welcome to %area of %owner";
 		return msg.replace("%area", "&a" + area + "&r").replace("%owner", "&a" + pname + "&r");
 	}
 	
 	public String getFarewellMessage(String area, String pname){
-		String msg = pl.getCConfig().getString(area + ".farewell");
+		String msg = getCConfig().getString(area + ".farewell");
 		if (msg == null)
 			msg = "You have left %area of %owner";
 		return msg.replace("%area", "&a" + area + "&r").replace("%owner", "&a" + pname + "&r");
 	}
 	
 	public int getSize(String area){
-		String[] pos1 = pl.getCConfig().getString(area + ".pos1").split(",");
-		String[] pos2 = pl.getCConfig().getString(area + ".pos2").split(",");
+		String[] pos1 = getCConfig().getString(area + ".pos1").split(",");
+		String[] pos2 = getCConfig().getString(area + ".pos2").split(",");
 		double x1 = 0, z1 = 0, x2 = 0, z2 = 0;
 		try {
 			x1 = Double.parseDouble(pos1[0]);
@@ -51,8 +51,8 @@ public class Areas {
 	
 	public double[] getMiddle(String area){
 		double[] mid = {-1, -1};
-		String[] pos1 = pl.getCConfig().getString(area + ".pos1").split(",");
-		String[] pos2 = pl.getCConfig().getString(area + ".pos2").split(",");
+		String[] pos1 = getCConfig().getString(area + ".pos1").split(",");
+		String[] pos2 = getCConfig().getString(area + ".pos2").split(",");
 		double x1 = 0, z1 = 0, x2 = 0, z2 = 0;
 		try {
 			x1 = Double.parseDouble(pos1[0]);
@@ -71,8 +71,8 @@ public class Areas {
 	
 	public double[] getWarp(String area){
 		double[] warp = {-1, -1};
-		if (pl.getCConfig().getString(area + ".warp") != null){
-			String[] warpget = pl.getCConfig().getString(area + ".warp").split(",");
+		if (getCConfig().getString(area + ".warp") != null){
+			String[] warpget = getCConfig().getString(area + ".warp").split(",");
 			try {
 				warp[0] = Double.parseDouble(warpget[0]);
 				warp[1] = Double.parseDouble(warpget[1]);
@@ -94,9 +94,9 @@ public class Areas {
 	}
 	
 	public boolean isProtected(Location loc){
-		for (String key : pl.getCConfig().getConfigurationSection("").getKeys(false)){
-			String[] pos1 = pl.getCConfig().getString(key + ".pos1").split(",");
-			String[] pos2 = pl.getCConfig().getString(key + ".pos2").split(",");
+		for (String key : getCConfig().getConfigurationSection("").getKeys(false)){
+			String[] pos1 = getCConfig().getString(key + ".pos1").split(",");
+			String[] pos2 = getCConfig().getString(key + ".pos2").split(",");
 			double x1 = Double.parseDouble(pos1[0]);
 			double z1 = Double.parseDouble(pos1[1]);
 			double x2 = Double.parseDouble(pos2[0]);
@@ -111,9 +111,9 @@ public class Areas {
 	}
 	
 	public String getArea(Location loc){
-		for (String key : pl.getCConfig().getConfigurationSection("").getKeys(false)){
-			String[] pos1 = pl.getCConfig().getString(key + ".pos1").split(",");
-			String[] pos2 = pl.getCConfig().getString(key + ".pos2").split(",");
+		for (String key : getCConfig().getConfigurationSection("").getKeys(false)){
+			String[] pos1 = getCConfig().getString(key + ".pos1").split(",");
+			String[] pos2 = getCConfig().getString(key + ".pos2").split(",");
 			double x1 = Double.parseDouble(pos1[0]);
 			double z1 = Double.parseDouble(pos1[1]);
 			double x2 = Double.parseDouble(pos2[0]);
@@ -128,21 +128,21 @@ public class Areas {
 	}
 	
 	public boolean isOwner(String area, String player){
-		if (pl.getCConfig().getString(area + ".owner").equalsIgnoreCase(player))
+		if (getCConfig().getString(area + ".owner").equalsIgnoreCase(player))
 			return true;
 		return false;
 	}
 	
 	public String getOwner(String area){
-		return pl.getCConfig().getString(area + ".owner");
+		return getCConfig().getString(area + ".owner");
 	}
 	
 	public Location getPosLocs(String area, int pos){
 		double[] posd = {-1, -1};
-		String[] str = pl.getCConfig().getString(area + ".pos" + pos).split(",");
+		String[] str = getCConfig().getString(area + ".pos" + pos).split(",");
 		posd[0] = Double.parseDouble(str[0]);
 		posd[1] = Double.parseDouble(str[1]);
-		Location loc = new Location(Bukkit.getWorld(pl.getCConfig().getString(area + ".world")), posd[0], 0, posd[1]);
+		Location loc = new Location(Bukkit.getWorld(getCConfig().getString(area + ".world")), posd[0], 0, posd[1]);
 		loc.setY(loc.getWorld().getHighestBlockYAt(loc));
 		return loc;
 	}
@@ -153,13 +153,13 @@ public class Areas {
 	}
 	
 	public boolean canBuild(String area, String pname){
-		if (pl.getCConfig().getString(area + ".owner").equals(pname) || pl.getCConfig().getList(area + ".whitelist").contains(pname))
+		if (getCConfig().getString(area + ".owner").equals(pname) || getCConfig().getList(area + ".whitelist").contains(pname))
 			return true;
 		return false;
 	}
 	
 	public boolean isRestricted(String area){
-		if (pl.getCConfig().getBoolean(area + ".restricted"))
+		if (getCConfig().getBoolean(area + ".restricted"))
 			return true;
 		return false;
 	}

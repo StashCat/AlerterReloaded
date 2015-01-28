@@ -7,12 +7,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-public class Chat implements Listener {
+public class Chat extends Main implements Listener {
 	Main pl;
 	
 	public Chat(Main pl){
 		this.pl = pl;
-		pl.getServer().getPluginManager().registerEvents(this, pl);
+		getServer().getPluginManager().registerEvents(this, pl);
 	}
 	
 	@EventHandler
@@ -20,24 +20,24 @@ public class Chat implements Listener {
 		if (e.isCancelled())
 			return;
 		Player p = e.getPlayer();
-		if (pl.settingWelcome.containsKey(p.getName()) || pl.settingFarewell.containsKey(p.getName())){
-			boolean welcome = pl.settingWelcome.containsKey(p.getName());
+		if (settingWelcome.containsKey(p.getName()) || settingFarewell.containsKey(p.getName())){
+			boolean welcome = settingWelcome.containsKey(p.getName());
 			String msg = e.getMessage();
 			String setting = null;
 			String area = null;
 			if (welcome){
 				setting = "Welcome";
-				area = pl.settingWelcome.get(p.getName());
-				pl.settingWelcome.remove(p.getName());
+				area = settingWelcome.get(p.getName());
+				settingWelcome.remove(p.getName());
 			} else {
 				setting = "Farewell";
-				area = pl.settingFarewell.get(p.getName());
-				pl.settingFarewell.remove(p.getName());
+				area = settingFarewell.get(p.getName());
+				settingFarewell.remove(p.getName());
 			}
-			pl.getCConfig().set(area + "." + setting.toLowerCase(), msg);
-			pl.saveCConfig();
-			pl.sendMsg(p, false, "&a" + setting + " message successfully set to:");
-			pl.sendMsg(p, false, "  " + msg);
+			getCConfig().set(area + "." + setting.toLowerCase(), msg);
+			saveCConfig();
+			sendMsg(p, false, "&a" + setting + " message successfully set to:");
+			sendMsg(p, false, "  " + msg);
 			e.setCancelled(true);
 		}
 	}
