@@ -1,5 +1,7 @@
 # PlugProtect
-`Source updated to above v1.1b`
+
+## BEING COMPLETELY RECODED!
+Sorry, but I completely ditched the old version in favor of using **encore**, my new library.
 
 ###### A successor to the popular old and now-abandoned Alerter protection plugin
 
